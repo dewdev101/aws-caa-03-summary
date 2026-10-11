@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <title>Crimson Ronin — Ninja crest</title>
+  <!-- Torn headband tails and a sharp, hooded silhouette. -->
+  <path d="m56 22 21-9-8 14 8 9-22-5M24 24 3 18l9 12-8 11 22-9" fill="#a33e2e"/>
+  <path d="M40 3 59 14l9 19-7 27-21 17-21-17-7-27 9-19L40 3Z" fill="#191a16" stroke="#e3c9a2" stroke-width="2"/>
+  <path d="m40 8 16 10 7 15-23-8-23 8 7-15L40 8Z" fill="#34352b"/>
+  <path d="m40 8 3 16 20 9-7-15L40 8Z" fill="#25261f"/>
+  <!-- Vermilion brow, split by a blade-shaped crest. -->
+  <path d="m17 29 23-7 23 7 2 8-25-7-25 7 2-8Z" fill="#be4935"/>
+  <path d="m40 13 4 10-4 7-4-7 4-10Z" fill="#f3dfbb"/>
+  <path d="m16 38 24-6 24 6-5 14-19 9-19-9-5-14Z" fill="#10110f"/>
+  <!-- Narrow, inward-slanting eyes remain legible at icon size. -->
+  <path d="m20 39 16 5-2 5-10-4-4-6Zm40 0-16 5 2 5 10-4 4-6Z" fill="#ff674b"/>
+  <path d="m24 41 11 4-1 2-8-3-2-3Zm32 0-11 4 1 2 8-3 2-3Z" fill="#ffe7bd"/>
+  <!-- Folded face armor tapers into a pointed chin. -->
+  <path d="m40 45 20 9-4 9-16 12-16-12-4-9 20-9Z" fill="#37382e"/>
+  <path d="m40 45 20 9-4 9-16 12V45Z" fill="#26271f"/>
+  <path d="m24 55 16 8 16-8M29 63l11 6 11-6" stroke="#b5a181" stroke-width="1.5"/>
+  <path d="m40 46-4 12 4 3 4-3-4-12Z" fill="#a33e2e"/>
+  <path d="m23 18 6-4m28 4-6-4" stroke="#f3dfbb" stroke-width="1.5"/>
+</svg>
