@@ -1,0 +1,40 @@
+/* Keep context while scrolling: sticky category heading + sticky title of the open card.
+   Loaded last. Needs .card not to clip (overflow: visible) so position: sticky works. */
+
+:root { --head-h: 52px; }
+
+.category[data-cat] { margin-top: 40px; }
+.category[data-cat]:first-of-type { margin-top: 12px; }
+
+.category[data-cat] .category-heading {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  min-height: var(--head-h);
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--cat) 45%, transparent);
+  background: #0c1417f2;
+  backdrop-filter: blur(6px);
+}
+
+.category[data-cat] .card { overflow: visible; }
+
+.category[data-cat] .lesson-details[open] > .lesson-summary {
+  position: sticky;
+  top: var(--head-h);
+  z-index: 10;
+  background: #121c20f5;
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* Anchor jumps shouldn't hide under the sticky bar */
+.category[data-cat] { scroll-margin-top: var(--head-h); }
+
+@media (max-width: 760px) {
+  :root { --head-h: 46px; }
+  .category[data-cat] .category-heading { padding: 6px 10px; }
+  .category[data-cat] h3 { font-size: 17px; }
+  .category[data-cat] .category-rule { display: none; }
+}

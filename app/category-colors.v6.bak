@@ -1,0 +1,151 @@
+/* Per-category colour coding — warm tones alternating with stone greys to suit the ninja theme
+   (ai, yamabuki, kurenai, fuji, seiji, shu, gin ...). Each category gets --cat via data-cat on the
+   sidebar button and on the category section (cards and quiz inherit it).
+   Loaded after globals.css / mobile.css / quiz-modal.css. */
+
+[data-cat="networking"] { --cat: #c8914a; }
+[data-cat="storage"] { --cat: #8d8a85; }
+[data-cat="storage-services"] { --cat: #b5693f; }
+[data-cat="database"] { --cat: #a39f98; }
+[data-cat="compute-messaging"] { --cat: #cfa55a; }
+[data-cat="iam"] { --cat: #77746f; }
+[data-cat="management"] { --cat: #a8574a; }
+[data-cat="dr"] { --cat: #b3aea5; }
+[data-cat="high-availability"] { --cat: #bf8a5e; }
+[data-cat="high-performance"] { --cat: #8f8b84; }
+[data-cat="billing"] { --cat: #c9794a; }
+[data-cat="analytics"] { --cat: #9e9a92; }
+[data-cat="governance"] { --cat: #d1ad72; }
+[data-cat="api"] { --cat: #7f7c77; }
+[data-cat="resource-recap"] { --cat: #b07a52; }
+
+/* Sidebar: coloured bar + number per category */
+.nav-item[data-cat] {
+  border-left: 4px solid var(--cat);
+}
+.nav-item[data-cat] .nav-number {
+  color: var(--cat);
+}
+.nav-item[data-cat]:hover {
+  background: color-mix(in srgb, var(--cat) 10%, transparent);
+}
+.nav-item[data-cat].active {
+  border-color: var(--cat);
+  background: color-mix(in srgb, var(--cat) 10%, #15110e);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* Category heading */
+.category[data-cat] .category-number {
+  color: var(--cat);
+  font-weight: 700;
+}
+.category[data-cat] h3 {
+  color: var(--cat);
+}
+.category[data-cat] .category-rule {
+  height: 2px;
+  background: linear-gradient(90deg, var(--cat), transparent);
+  opacity: 0.55;
+}
+.category[data-cat] .category-count {
+  color: color-mix(in srgb, var(--cat) 70%, #fff);
+}
+
+/* Cards */
+.category[data-cat] .card {
+  border-left: 4px solid var(--cat);
+}
+.category[data-cat] .lesson-arrow {
+  color: var(--cat);
+}
+.category[data-cat] .lesson-summary:hover {
+  background: color-mix(in srgb, var(--cat) 8%, transparent);
+}
+.category[data-cat] .lesson-details[open] .lesson-summary {
+  border-bottom-color: color-mix(in srgb, var(--cat) 45%, transparent);
+  background: color-mix(in srgb, var(--cat) 9%, transparent);
+}
+.category[data-cat] .card h4 {
+  color: var(--cat);
+}
+.category[data-cat] .card li::marker {
+  color: var(--cat);
+}
+.category[data-cat] .card th {
+  color: var(--cat);
+  background: color-mix(in srgb, var(--cat) 10%, #1c1814);
+}
+.category[data-cat] .tip {
+  border-left-color: var(--cat);
+  background: color-mix(in srgb, var(--cat) 9%, transparent);
+}
+
+/* Quiz button + pop-up */
+.category[data-cat] .quiz-open-btn {
+  border-left: 4px solid var(--cat);
+  border-color: color-mix(in srgb, var(--cat) 40%, transparent);
+  border-left-color: var(--cat);
+}
+.category[data-cat] .quiz-open-btn .quiz-chevron {
+  color: var(--cat);
+}
+.category[data-cat] .quiz-dialog {
+  border-color: color-mix(in srgb, var(--cat) 60%, #000);
+  border-top: 4px solid var(--cat);
+}
+.category[data-cat] .quiz-dialog-title {
+  color: var(--cat);
+}
+.category[data-cat] .quiz-dialog-close {
+  color: var(--cat);
+}
+.category[data-cat] .quiz-hint {
+  border-color: var(--cat);
+  color: var(--cat);
+}
+.category[data-cat] .quiz-option:hover {
+  border-color: var(--cat);
+}
+.category[data-cat] .quiz-option input {
+  accent-color: var(--cat);
+}
+.category[data-cat] .quiz-check-btn {
+  background: var(--cat);
+  border-color: var(--cat);
+  color: #10151a;
+}
+.category[data-cat] .quiz-check-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--cat) 80%, #fff);
+}
+
+/* Topic icons are a gold PNG sprite: rotate hue toward each category colour (gold ≈ 38°) */
+.category[data-cat] .category-symbol-art { filter: hue-rotate(var(--icon-hue, 0deg)) saturate(var(--icon-sat, 0.9)); }
+[data-cat="networking"] { --icon-hue: -4deg; --icon-sat: 0.9; }
+[data-cat="storage"] { --icon-hue: 0deg; --icon-sat: 0.12; }
+[data-cat="storage-services"] { --icon-hue: -17deg; --icon-sat: 0.9; }
+[data-cat="database"] { --icon-hue: 0deg; --icon-sat: 0.12; }
+[data-cat="compute-messaging"] { --icon-hue: 0deg; --icon-sat: 0.9; }
+[data-cat="iam"] { --icon-hue: 0deg; --icon-sat: 0.12; }
+[data-cat="management"] { --icon-hue: -30deg; --icon-sat: 0.9; }
+[data-cat="dr"] { --icon-hue: 0deg; --icon-sat: 0.12; }
+[data-cat="high-availability"] { --icon-hue: -11deg; --icon-sat: 0.9; }
+[data-cat="high-performance"] { --icon-hue: 0deg; --icon-sat: 0.12; }
+[data-cat="billing"] { --icon-hue: -16deg; --icon-sat: 0.9; }
+[data-cat="analytics"] { --icon-hue: 0deg; --icon-sat: 0.12; }
+[data-cat="governance"] { --icon-hue: -1deg; --icon-sat: 0.9; }
+[data-cat="api"] { --icon-hue: 0deg; --icon-sat: 0.12; }
+[data-cat="resource-recap"] { --icon-hue: -12deg; --icon-sat: 0.9; }
+
+/* Sidebar: "all categories" item + STUDY TOPICS label follow the same warm/grey tone */
+.nav-item:not([data-cat]).active {
+  background: linear-gradient(110deg, #c8914a24, #1c1814);
+  border-color: #c8914a;
+  color: #e6cfa6;
+  box-shadow: none;
+}
+.nav-item:not([data-cat]) .nav-number { color: #c8914a; }
+.nav-item[data-cat] .nav-count { color: color-mix(in srgb, var(--cat) 75%, #fff); }
+.topics-label { color: #a39f98; border-top-color: #a39f9833; }
+.nav-item[data-cat]:not(.active) { border-color: transparent; border-left-color: var(--cat); }

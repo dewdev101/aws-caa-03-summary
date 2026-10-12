@@ -32,44 +32,6 @@ export const categories: Category[] = [
         ),
       },
       {
-        title: "NAT Gateway vs Network ACL (NACL)",
-        body: (
-          <>
-            <table>
-              <tbody>
-                <tr><th>NAT Gateway</th><th>Network ACL</th></tr>
-                <tr><td>ให้ instance ใน <strong>private subnet</strong> ออกเน็ตได้ (outbound) โดยไม่เปิดให้ถูกเข้าจากนอก</td><td><strong>Firewall ระดับ subnet</strong> — allow/deny traffic ด้วย rule เป็น stateless (ต้องเปิดทั้ง inbound/outbound เอง)</td></tr>
-              </tbody>
-            </table>
-            <p className="trap">กับดัก: สองตัวนี้คนละหน้าที่กันเลย — NAT คือ &quot;ทางออกเน็ต&quot; ส่วน NACL คือ &quot;กฎกรองทราฟฟิก&quot; อย่าสับสนว่าใช้แทนกันได้</p>
-          </>
-        ),
-      },
-      {
-        title: "Elastic IP — คงอยู่ถาวรจนกว่าจะปล่อย",
-        body: (
-          <>
-            <p>Elastic IP ไม่หายไปเมื่อ stop/terminate instance เอง — ต้อง <strong>release</strong> เองเท่านั้นถึงจะคืน IP กลับ AWS pool</p>
-            <p className="trap">กับดัก: ถ้าปล่อย Elastic IP ไว้โดยไม่ attach กับ instance ที่ running อยู่ จะถูกคิดค่าใช้จ่าย (idle charge)</p>
-          </>
-        ),
-      },
-      {
-        title: "VPC DNS Attributes",
-        body: (
-          <>
-            <table>
-              <tbody>
-                <tr><th>Attribute</th><th>หน้าที่</th><th>Default</th></tr>
-                <tr><td><code>enableDnsSupport</code></td><td>เปิด DNS resolution ใน VPC</td><td>true เสมอ</td></tr>
-                <tr><td><code>enableDnsHostnames</code></td><td>ให้ instance มี DNS hostname</td><td>Default VPC/Console = true, CLI/API/CFN = false</td></tr>
-              </tbody>
-            </table>
-            <p>Public DNS hostname ใช้งานได้ต้องมี <strong>ทั้ง</strong> attribute เปิด <strong>และ</strong> instance มี Public IP</p>
-          </>
-        ),
-      },
-      {
         title: "Internet Gateway (IGW) และ Public / Private Subnet",
         body: (
           <>
@@ -120,6 +82,30 @@ export const categories: Category[] = [
         ),
       },
       {
+        title: "Elastic IP — คงอยู่ถาวรจนกว่าจะปล่อย",
+        body: (
+          <>
+            <p>Elastic IP ไม่หายไปเมื่อ stop/terminate instance เอง — ต้อง <strong>release</strong> เองเท่านั้นถึงจะคืน IP กลับ AWS pool</p>
+            <p className="trap">กับดัก: ถ้าปล่อย Elastic IP ไว้โดยไม่ attach กับ instance ที่ running อยู่ จะถูกคิดค่าใช้จ่าย (idle charge)</p>
+          </>
+        ),
+      },
+      {
+        title: "VPC DNS Attributes",
+        body: (
+          <>
+            <table>
+              <tbody>
+                <tr><th>Attribute</th><th>หน้าที่</th><th>Default</th></tr>
+                <tr><td><code>enableDnsSupport</code></td><td>เปิด DNS resolution ใน VPC</td><td>true เสมอ</td></tr>
+                <tr><td><code>enableDnsHostnames</code></td><td>ให้ instance มี DNS hostname</td><td>Default VPC/Console = true, CLI/API/CFN = false</td></tr>
+              </tbody>
+            </table>
+            <p>Public DNS hostname ใช้งานได้ต้องมี <strong>ทั้ง</strong> attribute เปิด <strong>และ</strong> instance มี Public IP</p>
+          </>
+        ),
+      },
+      {
         title: "NAT Gateway vs NAT Instance",
         body: (
           <>
@@ -139,6 +125,20 @@ export const categories: Category[] = [
               <li>มี <strong>Private NAT Gateway</strong> (ไม่มี Elastic IP) ไว้ต่อกับ VPC อื่น/on-prem ไม่ใช่เพื่อออกอินเทอร์เน็ต</li>
             </ul>
             <div className="tip">หลักจำ: private subnet ออกเน็ตได้แต่ห้ามถูกเข้า → NAT Gateway (วางใน public subnet) | ทนต่อ AZ ล่ม → NAT Gateway ต่อ AZ | NAT Instance ต้องปิด Source/Destination check</div>
+          </>
+        ),
+      },
+      {
+        title: "NAT Gateway vs Network ACL (NACL)",
+        body: (
+          <>
+            <table>
+              <tbody>
+                <tr><th>NAT Gateway</th><th>Network ACL</th></tr>
+                <tr><td>ให้ instance ใน <strong>private subnet</strong> ออกเน็ตได้ (outbound) โดยไม่เปิดให้ถูกเข้าจากนอก</td><td><strong>Firewall ระดับ subnet</strong> — allow/deny traffic ด้วย rule เป็น stateless (ต้องเปิดทั้ง inbound/outbound เอง)</td></tr>
+              </tbody>
+            </table>
+            <p className="trap">กับดัก: สองตัวนี้คนละหน้าที่กันเลย — NAT คือ &quot;ทางออกเน็ต&quot; ส่วน NACL คือ &quot;กฎกรองทราฟฟิก&quot; อย่าสับสนว่าใช้แทนกันได้</p>
           </>
         ),
       },
@@ -208,30 +208,6 @@ export const categories: Category[] = [
         ),
       },
       {
-        title: "VPC Endpoints — เข้า AWS service โดยไม่ออกอินเทอร์เน็ต",
-        body: (
-          <>
-            <p>ให้ resource ใน VPC เรียก AWS service ผ่าน <strong>เครือข่ายส่วนตัวของ AWS</strong> แทนการวิ่งผ่าน Internet Gateway/NAT — ปลอดภัยกว่าและมักถูกกว่า</p>
-            <table>
-              <tbody>
-                <tr><th></th><th>Gateway Endpoint</th><th>Interface Endpoint (AWS PrivateLink)</th></tr>
-                <tr><td>รองรับ</td><td><strong>S3 และ DynamoDB เท่านั้น</strong></td><td>AWS service จำนวนมาก (SQS, SNS, Kinesis, API Gateway ฯลฯ) และ service ที่เรา/พาร์ตเนอร์เปิดผ่าน PrivateLink</td></tr>
-                <tr><td>วิธีทำงาน</td><td>เพิ่ม <strong>route</strong> ใน route table (ชี้ prefix list ของ service)</td><td>สร้าง <strong>ENI พร้อม private IP</strong> ใน subnet ของเรา</td></tr>
-                <tr><td>ค่าใช้จ่าย</td><td><strong>ฟรี</strong></td><td>คิดเงินรายชั่วโมง + ตามข้อมูลที่ผ่าน</td></tr>
-                <tr><td>เข้าถึงจาก on-prem / VPC peering</td><td>ไม่ได้ (ใช้ได้เฉพาะภายใน VPC)</td><td>ได้ (ผ่าน Direct Connect / VPN)</td></tr>
-                <tr><td>ควบคุม</td><td>Endpoint policy</td><td>Security Group + Endpoint policy</td></tr>
-              </tbody>
-            </table>
-            <ul>
-              <li>Use case คลาสสิก: instance ใน private subnet อ่านเขียน S3/DynamoDB — ใช้ <strong>Gateway Endpoint</strong> แทนการวิ่งผ่าน NAT Gateway (ประหยัดค่า NAT และข้อมูลไม่ออกอินเทอร์เน็ต)</li>
-              <li><strong>Endpoint policy</strong> จำกัดว่า endpoint นี้เข้าถึง bucket/resource ไหนได้บ้าง</li>
-              <li>ต้องการเปิด service ของเราให้ VPC/account อื่นใช้แบบส่วนตัวโดยไม่ต้อง peering → <strong>PrivateLink</strong> (Interface endpoint ฝั่งผู้ใช้ + NLB ฝั่งผู้ให้บริการ)</li>
-            </ul>
-            <div className="tip">หลักจำ: S3 / DynamoDB จาก private subnet แบบฟรี → Gateway Endpoint | service อื่น หรือต้องเข้าจาก on-prem → Interface Endpoint (PrivateLink)</div>
-          </>
-        ),
-      },
-      {
         title: "Security Group อ้าง Security Group เป็น Source (3-tier + Auto Scaling)",
         body: (
           <>
@@ -262,29 +238,36 @@ sg-app (EC2 ใน ASG)  ──1433──▶  sg-db (DB)  [inbound: Source = sg-
           </>
         ),
       },
+      {
+        title: "VPC Endpoints — เข้า AWS service โดยไม่ออกอินเทอร์เน็ต",
+        body: (
+          <>
+            <p>ให้ resource ใน VPC เรียก AWS service ผ่าน <strong>เครือข่ายส่วนตัวของ AWS</strong> แทนการวิ่งผ่าน Internet Gateway/NAT — ปลอดภัยกว่าและมักถูกกว่า</p>
+            <table>
+              <tbody>
+                <tr><th></th><th>Gateway Endpoint</th><th>Interface Endpoint (AWS PrivateLink)</th></tr>
+                <tr><td>รองรับ</td><td><strong>S3 และ DynamoDB เท่านั้น</strong></td><td>AWS service จำนวนมาก (SQS, SNS, Kinesis, API Gateway ฯลฯ) และ service ที่เรา/พาร์ตเนอร์เปิดผ่าน PrivateLink</td></tr>
+                <tr><td>วิธีทำงาน</td><td>เพิ่ม <strong>route</strong> ใน route table (ชี้ prefix list ของ service)</td><td>สร้าง <strong>ENI พร้อม private IP</strong> ใน subnet ของเรา</td></tr>
+                <tr><td>ค่าใช้จ่าย</td><td><strong>ฟรี</strong></td><td>คิดเงินรายชั่วโมง + ตามข้อมูลที่ผ่าน</td></tr>
+                <tr><td>เข้าถึงจาก on-prem / VPC peering</td><td>ไม่ได้ (ใช้ได้เฉพาะภายใน VPC)</td><td>ได้ (ผ่าน Direct Connect / VPN)</td></tr>
+                <tr><td>ควบคุม</td><td>Endpoint policy</td><td>Security Group + Endpoint policy</td></tr>
+              </tbody>
+            </table>
+            <ul>
+              <li>Use case คลาสสิก: instance ใน private subnet อ่านเขียน S3/DynamoDB — ใช้ <strong>Gateway Endpoint</strong> แทนการวิ่งผ่าน NAT Gateway (ประหยัดค่า NAT และข้อมูลไม่ออกอินเทอร์เน็ต)</li>
+              <li><strong>Endpoint policy</strong> จำกัดว่า endpoint นี้เข้าถึง bucket/resource ไหนได้บ้าง</li>
+              <li>ต้องการเปิด service ของเราให้ VPC/account อื่นใช้แบบส่วนตัวโดยไม่ต้อง peering → <strong>PrivateLink</strong> (Interface endpoint ฝั่งผู้ใช้ + NLB ฝั่งผู้ให้บริการ)</li>
+            </ul>
+            <div className="tip">หลักจำ: S3 / DynamoDB จาก private subnet แบบฟรี → Gateway Endpoint | service อื่น หรือต้องเข้าจาก on-prem → Interface Endpoint (PrivateLink)</div>
+          </>
+        ),
+      },
     ],
   },
   {
     id: "storage",
     title: "Storage & Migration",
     cards: [
-      {
-        title: "Storage Gateway vs DataSync vs DMS",
-        body: (
-          <>
-            <table>
-              <tbody>
-                <tr><th>บริการ</th><th>ใช้เมื่อ</th></tr>
-                <tr><td>Storage Gateway</td><td>ต้องการ <strong>continuous/hybrid access</strong> จาก on-prem ไป S3-backed storage (File/Volume/Tape Gateway)</td></tr>
-                <tr><td>DataSync</td><td><strong>ย้ายไฟล์/object จำนวนมาก</strong> แบบรวดเร็ว อัตโนมัติ ครั้งเดียวหรือตามตาราง (ไม่ตระหนักเรื่อง schema)</td></tr>
-                <tr><td>DMS</td><td>ย้าย <strong>database</strong> ที่ตระหนัก schema/transaction — Full Load + CDC (Change Data Capture)</td></tr>
-              </tbody>
-            </table>
-            <p>DMS CDC-only mode ยิงเข้า <strong>Kinesis Data Streams</strong> ได้ ใช้แก้ปัญหา RDS ที่ไม่มี native stream</p>
-            <div className="tip">หลักจำ: ไฟล์ล้วนๆ จำนวนมาก → DataSync | มี schema/transaction → DMS | ต้องเข้าถึงต่อเนื่องจาก on-prem → Storage Gateway</div>
-          </>
-        ),
-      },
       {
         title: "Migration ทั้งชุด: MGN, Discovery Service, DMS + SCT, DataSync, Snow, VM Import/Export",
         body: (
@@ -331,6 +314,23 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
             </ul>
             <p className="trap">กับดัก: Application Discovery Service แค่ &quot;สำรวจ&quot; ไม่ได้ย้ายเครื่อง | DataSync ย้ายไฟล์ ไม่ใช่ทั้ง VM | VM Import/Export ย้ายครั้งเดียว ระหว่างนั้นต้นทางยังเปลี่ยนข้อมูลจึงต้องหยุดระบบนาน | DMS ไม่แปลง schema ซับซ้อนให้ ต้องใช้ SCT เมื่อเปลี่ยน engine</p>
             <div className="tip">หลักจำ: ย้ายเครื่อง → MGN | ย้ายข้อมูล DB → DMS | เปลี่ยน engine → SCT + DMS | ย้ายไฟล์ → DataSync | สำรวจก่อนย้าย → Discovery Service | ข้อมูลมหาศาล → Snow</div>
+          </>
+        ),
+      },
+      {
+        title: "Storage Gateway vs DataSync vs DMS",
+        body: (
+          <>
+            <table>
+              <tbody>
+                <tr><th>บริการ</th><th>ใช้เมื่อ</th></tr>
+                <tr><td>Storage Gateway</td><td>ต้องการ <strong>continuous/hybrid access</strong> จาก on-prem ไป S3-backed storage (File/Volume/Tape Gateway)</td></tr>
+                <tr><td>DataSync</td><td><strong>ย้ายไฟล์/object จำนวนมาก</strong> แบบรวดเร็ว อัตโนมัติ ครั้งเดียวหรือตามตาราง (ไม่ตระหนักเรื่อง schema)</td></tr>
+                <tr><td>DMS</td><td>ย้าย <strong>database</strong> ที่ตระหนัก schema/transaction — Full Load + CDC (Change Data Capture)</td></tr>
+              </tbody>
+            </table>
+            <p>DMS CDC-only mode ยิงเข้า <strong>Kinesis Data Streams</strong> ได้ ใช้แก้ปัญหา RDS ที่ไม่มี native stream</p>
+            <div className="tip">หลักจำ: ไฟล์ล้วนๆ จำนวนมาก → DataSync | มี schema/transaction → DMS | ต้องเข้าถึงต่อเนื่องจาก on-prem → Storage Gateway</div>
           </>
         ),
       },
@@ -412,6 +412,21 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
             <p><strong>ตัวอย่างโจทย์:</strong> ไฟล์ทำซ้ำได้ง่าย เดือนแรกเข้าบ่อย หลังจากนั้นไม่บ่อย ไฟล์เก่าเฉพาะ developer เข้าถึงและไม่มีข้อกำหนดเวลาดึง แต่ prefix <code>tdojo-finance</code> ต้องดึงระดับ ms → หลัง 30 วัน: prefix <code>tdojo-finance</code> → <strong>One Zone-IA</strong> | ส่วนที่เหลือ → <strong>Glacier</strong> (ด้วย Lifecycle policy)</p>
             <div className="tip">หลักจำ: reproducible + เข้าถึงน้อย + ต้องเร็ว → One Zone-IA | ยอมรอได้ → Glacier | ต่าง prefix ต่าง class → Lifecycle rule ตาม prefix | เกือบถูกแต่ใช้ Standard-IA ทั้งที่ทำซ้ำได้ = แพงกว่าที่จำเป็น</div>
             <p className="trap">กับดัก: Intelligent-Tiering มีค่า monitoring และไม่ใช่ตัวที่ถูกที่สุดเมื่อรู้ pattern การเข้าถึงอยู่แล้ว | One Zone-IA ใช้กับข้อมูลที่ &quot;หายแล้วสร้างใหม่ได้&quot; เท่านั้น | ถ้าต้องดึงระดับ ms ห้ามส่งเข้า Glacier Flexible / Deep Archive</p>
+          </>
+        ),
+      },
+      {
+        title: "S3 Replication, Performance & Event",
+        body: (
+          <>
+            <ul>
+              <li><strong>Replication</strong>: CRR (ข้าม region — DR/latency) และ SRR (region เดียวกัน — รวม log/แยก account); ต้อง <strong>เปิด Versioning ทั้งสอง bucket</strong> และจะ replicate เฉพาะ object ใหม่หลังเปิด (ของเก่าใช้ S3 Batch Replication)</li>
+              <li><strong>Transfer Acceleration</strong> — อัปโหลดผ่าน CloudFront edge location ใกล้ผู้ใช้ เหมาะกับผู้ใช้ไกลจาก region</li>
+              <li><strong>Multipart Upload</strong> — แบ่งไฟล์ใหญ่เป็นส่วนๆ อัปโหลดขนาน เร็วขึ้นและ retry เฉพาะส่วนที่พลาด (แนะนำเมื่อไฟล์เกิน ~100 MB)</li>
+              <li><strong>Event Notifications</strong> — ยิง event (เช่น ObjectCreated) ไปที่ SQS / SNS / Lambda / EventBridge</li>
+              <li><strong>Requester Pays</strong> — ให้ผู้ดาวน์โหลดจ่ายค่า transfer แทนเจ้าของ bucket</li>
+            </ul>
+            <div className="tip">หลักจำ: DR ข้าม region → CRR | ผู้ใช้ไกลอัปโหลดช้า → Transfer Acceleration | ไฟล์ใหญ่ → Multipart Upload</div>
           </>
         ),
       },
@@ -559,21 +574,6 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
         ),
       },
       {
-        title: "S3 Replication, Performance & Event",
-        body: (
-          <>
-            <ul>
-              <li><strong>Replication</strong>: CRR (ข้าม region — DR/latency) และ SRR (region เดียวกัน — รวม log/แยก account); ต้อง <strong>เปิด Versioning ทั้งสอง bucket</strong> และจะ replicate เฉพาะ object ใหม่หลังเปิด (ของเก่าใช้ S3 Batch Replication)</li>
-              <li><strong>Transfer Acceleration</strong> — อัปโหลดผ่าน CloudFront edge location ใกล้ผู้ใช้ เหมาะกับผู้ใช้ไกลจาก region</li>
-              <li><strong>Multipart Upload</strong> — แบ่งไฟล์ใหญ่เป็นส่วนๆ อัปโหลดขนาน เร็วขึ้นและ retry เฉพาะส่วนที่พลาด (แนะนำเมื่อไฟล์เกิน ~100 MB)</li>
-              <li><strong>Event Notifications</strong> — ยิง event (เช่น ObjectCreated) ไปที่ SQS / SNS / Lambda / EventBridge</li>
-              <li><strong>Requester Pays</strong> — ให้ผู้ดาวน์โหลดจ่ายค่า transfer แทนเจ้าของ bucket</li>
-            </ul>
-            <div className="tip">หลักจำ: DR ข้าม region → CRR | ผู้ใช้ไกลอัปโหลดช้า → Transfer Acceleration | ไฟล์ใหญ่ → Multipart Upload</div>
-          </>
-        ),
-      },
-      {
         title: "Amazon EBS — Block Storage ของ EC2",
         body: (
           <>
@@ -682,6 +682,67 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
         ),
       },
       {
+        title: "RDS Multi-AZ vs Read Replica และ Multi-AZ ของบริการอื่น",
+        body: (
+          <>
+            <p><strong>โจทย์ตัวอย่าง:</strong> RDS for MySQL ต้อง failover ไป instance สำรองอัตโนมัติเมื่อล่ม และต้อง highly available ที่สุด → ตอบ <strong>เปิด Multi-AZ (สร้าง standby ใน AZ อื่น)</strong></p>
+            <table>
+              <tbody>
+                <tr><th></th><th>Multi-AZ</th><th>Read Replica</th></tr>
+                <tr><td>จุดประสงค์</td><td><strong>High availability</strong> (failover)</td><td>กระจายการอ่าน (scale read) / DR</td></tr>
+                <tr><td>การ replicate</td><td>Synchronous</td><td>Asynchronous</td></tr>
+                <tr><td>Failover</td><td><strong>อัตโนมัติ</strong> (DNS endpoint เดิมชี้ไป standby)</td><td>ไม่อัตโนมัติ ต้อง promote เอง</td></tr>
+                <tr><td>รับ query?</td><td>แบบ instance: ไม่ (standby ไว้ failover) | แบบ DB cluster: standby อ่านได้</td><td>รับ SELECT ได้</td></tr>
+                <tr><td>ขอบเขต</td><td>Region เดียว (ข้าม AZ)</td><td>AZ เดียวกัน / ข้าม AZ / ข้าม Region ได้</td></tr>
+              </tbody>
+            </table>
+            <h4>Multi-AZ มีแค่ RDS หรือไม่?</h4>
+            <table>
+              <tbody>
+                <tr><th>บริการ</th><th>รูปแบบ</th></tr>
+                <tr><td>RDS</td><td>Multi-AZ instance (standby 1 ตัว) หรือ Multi-AZ DB cluster (standby อ่านได้ 2 ตัว สำหรับ MySQL/PostgreSQL)</td></tr>
+                <tr><td>Aurora</td><td>storage เก็บ 6 copy ใน 3 AZ อัตโนมัติ + Aurora Replica ใน AZ อื่นเป็นเป้า failover</td></tr>
+                <tr><td>ElastiCache (Redis)</td><td>เปิด Multi-AZ + automatic failover (Memcached ไม่มี replication)</td></tr>
+                <tr><td>FSx, OpenSearch, Amazon MQ</td><td>เลือกแบบ Multi-AZ / standby ได้</td></tr>
+                <tr><td>S3, DynamoDB, SQS, SNS, EFS Standard</td><td>ข้ามหลาย AZ ให้อัตโนมัติ ไม่ต้องตั้ง</td></tr>
+                <tr><td>EC2, NAT Gateway</td><td>เราต้องออกแบบกระจาย AZ เอง (ASG หลาย subnet, NAT ต่อ AZ)</td></tr>
+              </tbody>
+            </table>
+            <p className="trap">กับดัก: ตัวเลือกที่เขียนว่า &quot;promote any replica to become primary&quot; คือทำเอง ไม่ใช่ automatic failover | Multi-AZ กัน AZ ล่มได้ แต่ไม่กัน Region ล่ม (ต้องใช้ cross-region replica / snapshot copy / Aurora Global) | สร้าง read replica 5 ตัวไม่ได้ทำให้ HA ขึ้น</p>
+            <div className="tip">หลักจำ: &quot;automatic failover / HA&quot; → Multi-AZ | &quot;scale การอ่าน / reporting&quot; → Read Replica | &quot;กัน Region ล่ม&quot; → Cross-Region Replica / Aurora Global Database</div>
+          </>
+        ),
+      },
+      {
+        title: "RDS Backup & Encryption",
+        body: (
+          <>
+            <ul>
+              <li><strong>Automated backup</strong> — เก็บได้ 1–35 วัน, restore แบบ point-in-time ได้ (ไปที่ instance ใหม่เสมอ)</li>
+              <li><strong>Manual snapshot</strong> — อยู่จนกว่าจะลบเอง (ใช้เก็บระยะยาวเกิน 35 วัน)</li>
+              <li>Encryption at rest ด้วย KMS ต้องเลือก <strong>ตอนสร้าง</strong> เท่านั้น</li>
+              <li>Read replica ของ DB ที่ encrypt ต้อง encrypt ด้วย และ DB ที่ไม่ encrypt สร้าง replica ที่ encrypt ไม่ได้</li>
+            </ul>
+            <p><span className="correct">วิธีเข้ารหัส DB เดิมที่ไม่ได้ encrypt:</span> Snapshot → <strong>Copy snapshot พร้อมเปิด encryption</strong> → Restore เป็น instance ใหม่ → สลับ app ไปใช้</p>
+            <p><span className="trap">กับดัก:</span> &quot;เปิด encryption บน instance ที่ run อยู่โดยตรง&quot; ทำไม่ได้</p>
+          </>
+        ),
+      },
+      {
+        title: "RDS Proxy",
+        body: (
+          <>
+            <p>Connection pool แบบ managed อยู่หน้า RDS/Aurora</p>
+            <ul>
+              <li>แก้ปัญหา <strong>Lambda เปิด connection จำนวนมาก</strong> จน DB รับไม่ไหว (&quot;too many connections&quot;)</li>
+              <li>ลดเวลา failover ของ RDS/Aurora เพราะ app เชื่อมกับ proxy ไม่ต้องรอ DNS</li>
+              <li>บังคับใช้ IAM authentication และเก็บ credential ใน Secrets Manager ได้</li>
+              <li>อยู่ใน VPC เท่านั้น ไม่เปิดให้เข้าจาก internet</li>
+            </ul>
+          </>
+        ),
+      },
+      {
         title: "RDS Performance Insights — ลดค่าใช้จ่ายช่วงไม่ใช้งาน",
         body: (
           <>
@@ -689,20 +750,6 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
             <p><span className="correct">วิธีถูก:</span> Snapshot → Terminate instance (หยุดจ่าย compute) → <strong>Restore</strong> จาก snapshot ตอนจะใช้งานจริง</p>
             <p><span className="trap">กับดัก:</span> mysqldump ไปวิเคราะห์บนเครื่อง local — เสีย Performance Insights ไปเลย และ environment ไม่เหมือนจริง</p>
             <div className="tip">&quot;Restart&quot; = instance เดิมที่ยังมีอยู่ | &quot;Restore&quot; = สร้าง instance ใหม่จาก snapshot หลัง terminate ไปแล้ว</div>
-          </>
-        ),
-      },
-      {
-        title: "DynamoDB Global Table vs Global Secondary Index",
-        body: (
-          <>
-            <table>
-              <tbody>
-                <tr><th>Global Table</th><th>Global Secondary Index (GSI)</th></tr>
-                <tr><td>Replicate ข้าม <strong>region</strong> — ใช้สำหรับ DR</td><td>Index เพิ่มเติม <strong>region เดียวกัน</strong> — ไม่เกี่ยวกับ DR</td></tr>
-              </tbody>
-            </table>
-            <p className="trap">กับดักชื่อคล้าย — &quot;Global&quot; ใน GSI ไม่ได้แปลว่า multi-region</p>
           </>
         ),
       },
@@ -744,6 +791,20 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
         ),
       },
       {
+        title: "DynamoDB Global Table vs Global Secondary Index",
+        body: (
+          <>
+            <table>
+              <tbody>
+                <tr><th>Global Table</th><th>Global Secondary Index (GSI)</th></tr>
+                <tr><td>Replicate ข้าม <strong>region</strong> — ใช้สำหรับ DR</td><td>Index เพิ่มเติม <strong>region เดียวกัน</strong> — ไม่เกี่ยวกับ DR</td></tr>
+              </tbody>
+            </table>
+            <p className="trap">กับดักชื่อคล้าย — &quot;Global&quot; ใน GSI ไม่ได้แปลว่า multi-region</p>
+          </>
+        ),
+      },
+      {
         title: "ElastiCache: Redis vs Memcached",
         body: (
           <>
@@ -758,90 +819,6 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
             </table>
             <p>Pattern: <strong>Lazy loading</strong> (โหลดเข้า cache เมื่อ miss — ข้อมูลอาจเก่า) vs <strong>Write-through</strong> (เขียน cache พร้อม DB — ข้อมูลใหม่เสมอแต่เปลือง memory) — ใช้ TTL ควบคู่เพื่อลดข้อมูลค้าง</p>
             <div className="tip">หลักจำ: ต้องการ HA / persistence / leaderboard → Redis | cache ง่ายสุด ไม่ต้อง HA → Memcached</div>
-          </>
-        ),
-      },
-      {
-        title: "RDS Proxy",
-        body: (
-          <>
-            <p>Connection pool แบบ managed อยู่หน้า RDS/Aurora</p>
-            <ul>
-              <li>แก้ปัญหา <strong>Lambda เปิด connection จำนวนมาก</strong> จน DB รับไม่ไหว (&quot;too many connections&quot;)</li>
-              <li>ลดเวลา failover ของ RDS/Aurora เพราะ app เชื่อมกับ proxy ไม่ต้องรอ DNS</li>
-              <li>บังคับใช้ IAM authentication และเก็บ credential ใน Secrets Manager ได้</li>
-              <li>อยู่ใน VPC เท่านั้น ไม่เปิดให้เข้าจาก internet</li>
-            </ul>
-          </>
-        ),
-      },
-      {
-        title: "RDS Backup & Encryption",
-        body: (
-          <>
-            <ul>
-              <li><strong>Automated backup</strong> — เก็บได้ 1–35 วัน, restore แบบ point-in-time ได้ (ไปที่ instance ใหม่เสมอ)</li>
-              <li><strong>Manual snapshot</strong> — อยู่จนกว่าจะลบเอง (ใช้เก็บระยะยาวเกิน 35 วัน)</li>
-              <li>Encryption at rest ด้วย KMS ต้องเลือก <strong>ตอนสร้าง</strong> เท่านั้น</li>
-              <li>Read replica ของ DB ที่ encrypt ต้อง encrypt ด้วย และ DB ที่ไม่ encrypt สร้าง replica ที่ encrypt ไม่ได้</li>
-            </ul>
-            <p><span className="correct">วิธีเข้ารหัส DB เดิมที่ไม่ได้ encrypt:</span> Snapshot → <strong>Copy snapshot พร้อมเปิด encryption</strong> → Restore เป็น instance ใหม่ → สลับ app ไปใช้</p>
-            <p><span className="trap">กับดัก:</span> &quot;เปิด encryption บน instance ที่ run อยู่โดยตรง&quot; ทำไม่ได้</p>
-          </>
-        ),
-      },
-      {
-        title: "Use Case ตัวอย่าง (แนวโจทย์)",
-        body: (
-          <table>
-            <tbody>
-              <tr><th>สถานการณ์</th><th>คำตอบ</th></tr>
-              <tr><td>E-commerce ต้องการ SQL + transaction + HA ข้าม AZ</td><td>RDS/Aurora Multi-AZ</td></tr>
-              <tr><td>Dashboard/report ทำให้ production DB ช้า</td><td>Read Replica (หรือ Aurora Reader endpoint)</td></tr>
-              <tr><td>Mobile game ผู้เล่นหลักล้าน ต้องการ latency ต่ำแบบ serverless</td><td>DynamoDB (+ DAX ถ้าอ่านหนัก)</td></tr>
-              <tr><td>Leaderboard แบบ real-time</td><td>ElastiCache Redis (sorted set)</td></tr>
-              <tr><td>เก็บ user session ของเว็บที่มีหลาย EC2 หลัง load balancer</td><td>ElastiCache หรือ DynamoDB</td></tr>
-              <tr><td>แอป global ต้องอ่าน/เขียนได้ใน region ใกล้ผู้ใช้</td><td>DynamoDB Global Table</td></tr>
-              <tr><td>Relational DB ต้องการ DR ข้าม region RPO ~1 วินาที</td><td>Aurora Global Database</td></tr>
-              <tr><td>Workload DB ใช้เป็นช่วงๆ คาดเดาไม่ได้ ต้องการลดค่าใช้จ่าย</td><td>Aurora Serverless v2 หรือ DynamoDB On-Demand</td></tr>
-              <tr><td>Lambda เชื่อม RDS แล้วเจอ &quot;too many connections&quot;</td><td>RDS Proxy</td></tr>
-              <tr><td>ระบบ recommendation / fraud detection จากความสัมพันธ์</td><td>Neptune</td></tr>
-              <tr><td>ย้าย MongoDB ขึ้น AWS แบบ managed</td><td>DocumentDB</td></tr>
-              <tr><td>วิเคราะห์ข้อมูลยอดขายหลาย TB ด้วย SQL ซับซ้อน</td><td>Redshift (Redshift Spectrum ถ้าข้อมูลอยู่ใน S3)</td></tr>
-              <tr><td>Oracle on-prem → Aurora PostgreSQL (คนละ engine)</td><td>SCT (แปลง schema) + DMS (ย้ายข้อมูล)</td></tr>
-            </tbody>
-          </table>
-        ),
-      },
-      {
-        title: "RDS Multi-AZ vs Read Replica และ Multi-AZ ของบริการอื่น",
-        body: (
-          <>
-            <p><strong>โจทย์ตัวอย่าง:</strong> RDS for MySQL ต้อง failover ไป instance สำรองอัตโนมัติเมื่อล่ม และต้อง highly available ที่สุด → ตอบ <strong>เปิด Multi-AZ (สร้าง standby ใน AZ อื่น)</strong></p>
-            <table>
-              <tbody>
-                <tr><th></th><th>Multi-AZ</th><th>Read Replica</th></tr>
-                <tr><td>จุดประสงค์</td><td><strong>High availability</strong> (failover)</td><td>กระจายการอ่าน (scale read) / DR</td></tr>
-                <tr><td>การ replicate</td><td>Synchronous</td><td>Asynchronous</td></tr>
-                <tr><td>Failover</td><td><strong>อัตโนมัติ</strong> (DNS endpoint เดิมชี้ไป standby)</td><td>ไม่อัตโนมัติ ต้อง promote เอง</td></tr>
-                <tr><td>รับ query?</td><td>แบบ instance: ไม่ (standby ไว้ failover) | แบบ DB cluster: standby อ่านได้</td><td>รับ SELECT ได้</td></tr>
-                <tr><td>ขอบเขต</td><td>Region เดียว (ข้าม AZ)</td><td>AZ เดียวกัน / ข้าม AZ / ข้าม Region ได้</td></tr>
-              </tbody>
-            </table>
-            <h4>Multi-AZ มีแค่ RDS หรือไม่?</h4>
-            <table>
-              <tbody>
-                <tr><th>บริการ</th><th>รูปแบบ</th></tr>
-                <tr><td>RDS</td><td>Multi-AZ instance (standby 1 ตัว) หรือ Multi-AZ DB cluster (standby อ่านได้ 2 ตัว สำหรับ MySQL/PostgreSQL)</td></tr>
-                <tr><td>Aurora</td><td>storage เก็บ 6 copy ใน 3 AZ อัตโนมัติ + Aurora Replica ใน AZ อื่นเป็นเป้า failover</td></tr>
-                <tr><td>ElastiCache (Redis)</td><td>เปิด Multi-AZ + automatic failover (Memcached ไม่มี replication)</td></tr>
-                <tr><td>FSx, OpenSearch, Amazon MQ</td><td>เลือกแบบ Multi-AZ / standby ได้</td></tr>
-                <tr><td>S3, DynamoDB, SQS, SNS, EFS Standard</td><td>ข้ามหลาย AZ ให้อัตโนมัติ ไม่ต้องตั้ง</td></tr>
-                <tr><td>EC2, NAT Gateway</td><td>เราต้องออกแบบกระจาย AZ เอง (ASG หลาย subnet, NAT ต่อ AZ)</td></tr>
-              </tbody>
-            </table>
-            <p className="trap">กับดัก: ตัวเลือกที่เขียนว่า &quot;promote any replica to become primary&quot; คือทำเอง ไม่ใช่ automatic failover | Multi-AZ กัน AZ ล่มได้ แต่ไม่กัน Region ล่ม (ต้องใช้ cross-region replica / snapshot copy / Aurora Global) | สร้าง read replica 5 ตัวไม่ได้ทำให้ HA ขึ้น</p>
-            <div className="tip">หลักจำ: &quot;automatic failover / HA&quot; → Multi-AZ | &quot;scale การอ่าน / reporting&quot; → Read Replica | &quot;กัน Region ล่ม&quot; → Cross-Region Replica / Aurora Global Database</div>
           </>
         ),
       },
@@ -890,6 +867,29 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
           </>
         ),
       },
+      {
+        title: "Use Case ตัวอย่าง (แนวโจทย์)",
+        body: (
+          <table>
+            <tbody>
+              <tr><th>สถานการณ์</th><th>คำตอบ</th></tr>
+              <tr><td>E-commerce ต้องการ SQL + transaction + HA ข้าม AZ</td><td>RDS/Aurora Multi-AZ</td></tr>
+              <tr><td>Dashboard/report ทำให้ production DB ช้า</td><td>Read Replica (หรือ Aurora Reader endpoint)</td></tr>
+              <tr><td>Mobile game ผู้เล่นหลักล้าน ต้องการ latency ต่ำแบบ serverless</td><td>DynamoDB (+ DAX ถ้าอ่านหนัก)</td></tr>
+              <tr><td>Leaderboard แบบ real-time</td><td>ElastiCache Redis (sorted set)</td></tr>
+              <tr><td>เก็บ user session ของเว็บที่มีหลาย EC2 หลัง load balancer</td><td>ElastiCache หรือ DynamoDB</td></tr>
+              <tr><td>แอป global ต้องอ่าน/เขียนได้ใน region ใกล้ผู้ใช้</td><td>DynamoDB Global Table</td></tr>
+              <tr><td>Relational DB ต้องการ DR ข้าม region RPO ~1 วินาที</td><td>Aurora Global Database</td></tr>
+              <tr><td>Workload DB ใช้เป็นช่วงๆ คาดเดาไม่ได้ ต้องการลดค่าใช้จ่าย</td><td>Aurora Serverless v2 หรือ DynamoDB On-Demand</td></tr>
+              <tr><td>Lambda เชื่อม RDS แล้วเจอ &quot;too many connections&quot;</td><td>RDS Proxy</td></tr>
+              <tr><td>ระบบ recommendation / fraud detection จากความสัมพันธ์</td><td>Neptune</td></tr>
+              <tr><td>ย้าย MongoDB ขึ้น AWS แบบ managed</td><td>DocumentDB</td></tr>
+              <tr><td>วิเคราะห์ข้อมูลยอดขายหลาย TB ด้วย SQL ซับซ้อน</td><td>Redshift (Redshift Spectrum ถ้าข้อมูลอยู่ใน S3)</td></tr>
+              <tr><td>Oracle on-prem → Aurora PostgreSQL (คนละ engine)</td><td>SCT (แปลง schema) + DMS (ย้ายข้อมูล)</td></tr>
+            </tbody>
+          </table>
+        ),
+      },
     ],
   },
   {
@@ -897,12 +897,102 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
     title: "Compute & Messaging",
     cards: [
       {
+        title: "EC2 Instance Family + Instance Store vs EBS — เลือกให้ตรงกับงาน",
+        body: (
+          <>
+            <h4>จับคู่ตระกูล instance กับสิ่งที่เน้น</h4>
+            <table>
+              <tbody>
+                <tr><th>ตระกูล</th><th>เน้น</th><th>ตัวอย่างงาน</th></tr>
+                <tr><td>General purpose (T, M)</td><td>สมดุล CPU/RAM</td><td>เว็บ, แอปทั่วไป</td></tr>
+                <tr><td>Compute optimized (C)</td><td>CPU</td><td>batch, encoding, game server</td></tr>
+                <tr><td>Memory optimized (R, X)</td><td>RAM</td><td>in-memory DB, cache, SAP HANA</td></tr>
+                <tr><td><strong>Storage optimized (I, D, H)</strong></td><td><strong>Disk IOPS / throughput</strong></td><td><strong>NoSQL, data warehouse, log processing</strong></td></tr>
+                <tr><td>Accelerated (P, G)</td><td>GPU</td><td>ML, graphics</td></tr>
+              </tbody>
+            </table>
+            <h4>Instance Store vs EBS</h4>
+            <table>
+              <tbody>
+                <tr><th></th><th>Instance Store</th><th>EBS</th></tr>
+                <tr><td>ตำแหน่ง</td><td>disk ต่อตรงกับ host (NVMe SSD)</td><td>ต่อผ่าน network</td></tr>
+                <tr><td>ความเร็ว</td><td>IOPS/throughput สูงมาก latency ต่ำ</td><td>ดี แต่ช้ากว่า</td></tr>
+                <tr><td>ข้อมูล</td><td><strong>ชั่วคราว</strong> หายเมื่อ stop/terminate หรือ hardware เสีย</td><td>คงอยู่ (persistent)</td></tr>
+                <tr><td>เหมาะกับ</td><td>cache, buffer, DB ที่ replicate เอง</td><td>ข้อมูลที่ต้องไม่หาย</td></tr>
+              </tbody>
+            </table>
+            <p className="trap">กับดัก: โจทย์ที่บอก &quot;NoSQL replicate ข้อมูลเองหลายชุด + high IOPS + sequential I/O&quot; ต้องตอบ Storage optimized + instance store (ข้อมูลมี copy อื่นแล้วจึงไม่กลัวหาย) | Memory optimized เน้น RAM ไม่ใช่ disk | Compute optimized เน้น CPU</p>
+            <div className="tip">หลักจำ: disk I/O สูง → Storage optimized | RAM ใหญ่ → Memory optimized | CPU หนัก → Compute optimized | ข้อมูลต้องไม่หาย → EBS</div>
+          </>
+        ),
+      },
+      {
+        title: "EBS vs Instance Store",
+        body: (
+          <>
+            <table>
+              <tbody>
+                <tr><th>EBS (Elastic Block Store)</th><th>Instance Store</th></tr>
+                <tr><td>Network-attached, <strong>persistent</strong> — ข้อมูลอยู่แม้ stop/terminate instance (ถ้าไม่ตั้งลบ)</td><td>Physically attached กับ host เดิม — <strong>ข้อมูลหายถ้า stop หรือ terminate</strong> (หรือ hardware ล้ม)</td></tr>
+              </tbody>
+            </table>
+            <p className="trap">กับดัก: Instance Store เร็วกว่า (local disk) แต่ใช้เก็บข้อมูลที่ต้อง persistent ไม่ได้เด็ดขาด — เหมาะกับ cache/temp data เท่านั้น</p>
+          </>
+        ),
+      },
+      {
         title: "Multi-AZ Fault Tolerance (สูตรคำนวณ)",
         body: (
           <>
             <p>ถ้าโจทย์บอก &quot;ต้องมี X instance running ที่ at all times&quot; แม้เสีย AZ ใดไป 1 AZ — หมายถึง <strong>อย่างน้อย X</strong> (minimum) ไม่ใช่ total ไม่เกิน X</p>
             <p>สูตรเช็ค: (รวมทุก AZ) − (AZ ที่มีเครื่องมากที่สุด) ≥ X จึงผ่าน</p>
             <p>ตัวอย่าง ต้องการ 6: (2,2,2)=4 <span className="trap">ไม่ผ่าน</span> | (3,3,3)=6 <span className="correct">ผ่าน</span> | (6,6,0)=6 <span className="correct">ผ่าน</span> (แต่ไม่ best practice เพราะ AZ หนึ่งไม่ได้ใช้เลย)</p>
+          </>
+        ),
+      },
+      {
+        title: "EKS — Node vs Pod และการ Scale (HPA, Cluster Autoscaler, Fargate)",
+        body: (
+          <>
+            <p><strong>โจทย์ตัวอย่าง:</strong> รัน container บน Amazon EKS workload เปลี่ยนตามช่วงวัน ต้องการให้ infrastructure ข้างล่าง scale in/out อัตโนมัติ โดย overhead น้อยที่สุด → ตอบ <strong>Kubernetes Metrics + Kubernetes Cluster Autoscaler</strong></p>
+            <h4>Node vs Pod</h4>
+            <table>
+              <tbody>
+                <tr><th></th><th>Node</th><th>Pod</th></tr>
+                <tr><td>คืออะไร</td><td>เครื่องที่รันงาน (ใน EKS ปกติคือ EC2 instance)</td><td>หน่วยเล็กที่สุดที่ Kubernetes จัดการ ห่อ 1 หรือหลาย container</td></tr>
+                <tr><td>ทรัพยากร</td><td>มี CPU/memory ของตัวเอง</td><td>ขอใช้ (<code>requests</code>) จาก node</td></tr>
+                <tr><td>ใครสร้าง/ลบ</td><td>Cluster Autoscaler / ASG</td><td>Deployment, HPA</td></tr>
+                <tr><td>ถ้าล่ม</td><td>pod บน node นั้นต้องย้ายไป node อื่น</td><td>Kubernetes สร้าง pod ใหม่ทดแทน</td></tr>
+              </tbody>
+            </table>
+            <pre><code>{`Cluster (EKS)
+ ├─ Node 1 (EC2) ── Pod A , Pod B
+ ├─ Node 2 (EC2) ── Pod C , Pod D
+ └─ Node 3 (EC2) ── (ว่าง)`}</code></pre>
+            <h4>1 node รับ pod ได้จำกัด</h4>
+            <ul>
+              <li><strong>ทรัพยากร:</strong> วาง pod ลง node ได้เมื่อผลรวม <code>requests</code> ไม่เกินความจุที่เหลือ (บางส่วนสงวนไว้ให้ระบบ เช่น kubelet) เต็มแล้ว pod ใหม่จะ <strong>Pending</strong></li>
+              <li><strong>เพดานจำนวน pod:</strong> บน EKS แบบ VPC CNI ปกติ pod ได้ IP จาก VPC จึงจำกัดตามจำนวน ENI/IP ของ instance type (instance เล็กรับได้น้อยกว่า) ตัวเลขเฉพาะรุ่นไม่ต้องจำ และควรตรวจกับเอกสาร AWS ล่าสุด</li>
+            </ul>
+            <h4>การ scale 2 ระดับ</h4>
+            <table>
+              <tbody>
+                <tr><th>ระดับ</th><th>ตัวทำงาน</th><th>ทำอะไร</th></tr>
+                <tr><td><strong>Pod</strong></td><td><strong>HPA</strong> (Horizontal Pod Autoscaler) อ่านค่าจาก Kubernetes Metrics Server</td><td>เพิ่ม/ลดจำนวน pod ตาม CPU/memory</td></tr>
+                <tr><td><strong>Node</strong></td><td><strong>Cluster Autoscaler</strong> (หรือ Karpenter)</td><td>เพิ่ม node เมื่อมี pod Pending เพราะทรัพยากรไม่พอ และลด node ที่ว่าง</td></tr>
+                <tr><td>ไม่จัดการ node เอง</td><td><strong>EKS on Fargate</strong></td><td>แต่ละ pod ได้ compute แยก AWS จัดให้</td></tr>
+              </tbody>
+            </table>
+            <pre><code>{`โหลดเพิ่ม → Metrics Server → HPA เพิ่ม pod → pod ค้าง (ที่ไม่พอ)
+          → Cluster Autoscaler เพิ่ม node → pod ถูกจัดวางได้`}</code></pre>
+            <h4>ทำไมตัวเลือกอื่นในโจทย์ผิด</h4>
+            <ul>
+              <li><strong>EC2 ASG + custom scaling policy:</strong> ต้องออกแบบ/ดูแลกฎเอง และ ASG ไม่รู้เรื่อง pod ที่ค้างใน Kubernetes → overhead มากกว่า</li>
+              <li><strong>API Gateway (edge-optimized):</strong> ใช้เปิด API ออกภายนอก ไม่เกี่ยวกับการ scale node</li>
+              <li><strong>CloudWatch alarm อย่างเดียว:</strong> แค่เฝ้าดู/แจ้งเตือน ไม่ได้ scale อะไร</li>
+            </ul>
+            <p className="trap">กับดัก: แยก &quot;scale pod&quot; (HPA) ออกจาก &quot;scale node&quot; (Cluster Autoscaler) ให้ออก | pod scale เร็ว (วินาที) node ช้ากว่า (รอ EC2 สตาร์ท) | ถ้าโจทย์ให้ &quot;ไม่ต้องจัดการ node เลย&quot; ให้ตอบ Fargate</p>
+            <div className="tip">หลักจำ: infrastructure/จำนวนเครื่อง → Cluster Autoscaler | จำนวน container/replica → HPA | pod ค้าง Pending → ต้องเพิ่ม node | ไม่อยากดูแล node → EKS on Fargate</div>
           </>
         ),
       },
@@ -974,24 +1064,6 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
         ),
       },
       {
-        title: "SQS vs SNS vs EventBridge vs Kinesis vs Amazon MQ",
-        body: (
-          <>
-            <table>
-              <tbody>
-                <tr><th>บริการ</th><th>ลักษณะ</th><th>ใช้เมื่อ</th></tr>
-                <tr><td><strong>SQS</strong></td><td>Queue, pull, 1 ข้อความ → 1 consumer, ลบเมื่อ process เสร็จ</td><td>Decouple / buffer / งาน asynchronous / worker fleet</td></tr>
-                <tr><td><strong>SNS</strong></td><td>Pub/sub, push → หลาย subscriber</td><td>Broadcast, fan-out, แจ้งเตือน email/SMS/push</td></tr>
-                <tr><td><strong>EventBridge</strong></td><td>Event bus + rule routing จาก AWS service/SaaS/แอปเรา + schedule</td><td>Event-driven ที่ต้อง route ตามเนื้อหา event หลายเงื่อนไข</td></tr>
-                <tr><td><strong>Kinesis Data Streams</strong></td><td>Stream real-time เรียงลำดับตาม shard เก็บย้อนหลังได้ (replay) หลาย consumer อ่านซ้ำได้</td><td>ข้อมูลไหลต่อเนื่องปริมาณสูง เช่น clickstream, log, IoT</td></tr>
-                <tr><td><strong>Amazon MQ</strong></td><td>Managed ActiveMQ/RabbitMQ (JMS, AMQP, MQTT, STOMP ฯลฯ)</td><td>ย้ายระบบเดิมที่ใช้ message broker มาตรฐานโดยไม่แก้โค้ด</td></tr>
-              </tbody>
-            </table>
-            <div className="tip">หลักจำ: งานค้างให้ worker ทำ → SQS | ประกาศให้ทุกคนรู้ → SNS | ต้องการ replay/stream ปริมาณสูง → Kinesis | ย้าย JMS/AMQP เดิมมา AWS → Amazon MQ</div>
-          </>
-        ),
-      },
-      {
         title: "Kinesis Data Streams — Shard, Partition Key และการเรียงลำดับ",
         body: (
           <>
@@ -1019,92 +1091,20 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
         ),
       },
       {
-        title: "EBS vs Instance Store",
+        title: "SQS vs SNS vs EventBridge vs Kinesis vs Amazon MQ",
         body: (
           <>
             <table>
               <tbody>
-                <tr><th>EBS (Elastic Block Store)</th><th>Instance Store</th></tr>
-                <tr><td>Network-attached, <strong>persistent</strong> — ข้อมูลอยู่แม้ stop/terminate instance (ถ้าไม่ตั้งลบ)</td><td>Physically attached กับ host เดิม — <strong>ข้อมูลหายถ้า stop หรือ terminate</strong> (หรือ hardware ล้ม)</td></tr>
+                <tr><th>บริการ</th><th>ลักษณะ</th><th>ใช้เมื่อ</th></tr>
+                <tr><td><strong>SQS</strong></td><td>Queue, pull, 1 ข้อความ → 1 consumer, ลบเมื่อ process เสร็จ</td><td>Decouple / buffer / งาน asynchronous / worker fleet</td></tr>
+                <tr><td><strong>SNS</strong></td><td>Pub/sub, push → หลาย subscriber</td><td>Broadcast, fan-out, แจ้งเตือน email/SMS/push</td></tr>
+                <tr><td><strong>EventBridge</strong></td><td>Event bus + rule routing จาก AWS service/SaaS/แอปเรา + schedule</td><td>Event-driven ที่ต้อง route ตามเนื้อหา event หลายเงื่อนไข</td></tr>
+                <tr><td><strong>Kinesis Data Streams</strong></td><td>Stream real-time เรียงลำดับตาม shard เก็บย้อนหลังได้ (replay) หลาย consumer อ่านซ้ำได้</td><td>ข้อมูลไหลต่อเนื่องปริมาณสูง เช่น clickstream, log, IoT</td></tr>
+                <tr><td><strong>Amazon MQ</strong></td><td>Managed ActiveMQ/RabbitMQ (JMS, AMQP, MQTT, STOMP ฯลฯ)</td><td>ย้ายระบบเดิมที่ใช้ message broker มาตรฐานโดยไม่แก้โค้ด</td></tr>
               </tbody>
             </table>
-            <p className="trap">กับดัก: Instance Store เร็วกว่า (local disk) แต่ใช้เก็บข้อมูลที่ต้อง persistent ไม่ได้เด็ดขาด — เหมาะกับ cache/temp data เท่านั้น</p>
-          </>
-        ),
-      },
-      {
-        title: "EKS — Node vs Pod และการ Scale (HPA, Cluster Autoscaler, Fargate)",
-        body: (
-          <>
-            <p><strong>โจทย์ตัวอย่าง:</strong> รัน container บน Amazon EKS workload เปลี่ยนตามช่วงวัน ต้องการให้ infrastructure ข้างล่าง scale in/out อัตโนมัติ โดย overhead น้อยที่สุด → ตอบ <strong>Kubernetes Metrics + Kubernetes Cluster Autoscaler</strong></p>
-            <h4>Node vs Pod</h4>
-            <table>
-              <tbody>
-                <tr><th></th><th>Node</th><th>Pod</th></tr>
-                <tr><td>คืออะไร</td><td>เครื่องที่รันงาน (ใน EKS ปกติคือ EC2 instance)</td><td>หน่วยเล็กที่สุดที่ Kubernetes จัดการ ห่อ 1 หรือหลาย container</td></tr>
-                <tr><td>ทรัพยากร</td><td>มี CPU/memory ของตัวเอง</td><td>ขอใช้ (<code>requests</code>) จาก node</td></tr>
-                <tr><td>ใครสร้าง/ลบ</td><td>Cluster Autoscaler / ASG</td><td>Deployment, HPA</td></tr>
-                <tr><td>ถ้าล่ม</td><td>pod บน node นั้นต้องย้ายไป node อื่น</td><td>Kubernetes สร้าง pod ใหม่ทดแทน</td></tr>
-              </tbody>
-            </table>
-            <pre><code>{`Cluster (EKS)
- ├─ Node 1 (EC2) ── Pod A , Pod B
- ├─ Node 2 (EC2) ── Pod C , Pod D
- └─ Node 3 (EC2) ── (ว่าง)`}</code></pre>
-            <h4>1 node รับ pod ได้จำกัด</h4>
-            <ul>
-              <li><strong>ทรัพยากร:</strong> วาง pod ลง node ได้เมื่อผลรวม <code>requests</code> ไม่เกินความจุที่เหลือ (บางส่วนสงวนไว้ให้ระบบ เช่น kubelet) เต็มแล้ว pod ใหม่จะ <strong>Pending</strong></li>
-              <li><strong>เพดานจำนวน pod:</strong> บน EKS แบบ VPC CNI ปกติ pod ได้ IP จาก VPC จึงจำกัดตามจำนวน ENI/IP ของ instance type (instance เล็กรับได้น้อยกว่า) ตัวเลขเฉพาะรุ่นไม่ต้องจำ และควรตรวจกับเอกสาร AWS ล่าสุด</li>
-            </ul>
-            <h4>การ scale 2 ระดับ</h4>
-            <table>
-              <tbody>
-                <tr><th>ระดับ</th><th>ตัวทำงาน</th><th>ทำอะไร</th></tr>
-                <tr><td><strong>Pod</strong></td><td><strong>HPA</strong> (Horizontal Pod Autoscaler) อ่านค่าจาก Kubernetes Metrics Server</td><td>เพิ่ม/ลดจำนวน pod ตาม CPU/memory</td></tr>
-                <tr><td><strong>Node</strong></td><td><strong>Cluster Autoscaler</strong> (หรือ Karpenter)</td><td>เพิ่ม node เมื่อมี pod Pending เพราะทรัพยากรไม่พอ และลด node ที่ว่าง</td></tr>
-                <tr><td>ไม่จัดการ node เอง</td><td><strong>EKS on Fargate</strong></td><td>แต่ละ pod ได้ compute แยก AWS จัดให้</td></tr>
-              </tbody>
-            </table>
-            <pre><code>{`โหลดเพิ่ม → Metrics Server → HPA เพิ่ม pod → pod ค้าง (ที่ไม่พอ)
-          → Cluster Autoscaler เพิ่ม node → pod ถูกจัดวางได้`}</code></pre>
-            <h4>ทำไมตัวเลือกอื่นในโจทย์ผิด</h4>
-            <ul>
-              <li><strong>EC2 ASG + custom scaling policy:</strong> ต้องออกแบบ/ดูแลกฎเอง และ ASG ไม่รู้เรื่อง pod ที่ค้างใน Kubernetes → overhead มากกว่า</li>
-              <li><strong>API Gateway (edge-optimized):</strong> ใช้เปิด API ออกภายนอก ไม่เกี่ยวกับการ scale node</li>
-              <li><strong>CloudWatch alarm อย่างเดียว:</strong> แค่เฝ้าดู/แจ้งเตือน ไม่ได้ scale อะไร</li>
-            </ul>
-            <p className="trap">กับดัก: แยก &quot;scale pod&quot; (HPA) ออกจาก &quot;scale node&quot; (Cluster Autoscaler) ให้ออก | pod scale เร็ว (วินาที) node ช้ากว่า (รอ EC2 สตาร์ท) | ถ้าโจทย์ให้ &quot;ไม่ต้องจัดการ node เลย&quot; ให้ตอบ Fargate</p>
-            <div className="tip">หลักจำ: infrastructure/จำนวนเครื่อง → Cluster Autoscaler | จำนวน container/replica → HPA | pod ค้าง Pending → ต้องเพิ่ม node | ไม่อยากดูแล node → EKS on Fargate</div>
-          </>
-        ),
-      },
-      {
-        title: "EC2 Instance Family + Instance Store vs EBS — เลือกให้ตรงกับงาน",
-        body: (
-          <>
-            <h4>จับคู่ตระกูล instance กับสิ่งที่เน้น</h4>
-            <table>
-              <tbody>
-                <tr><th>ตระกูล</th><th>เน้น</th><th>ตัวอย่างงาน</th></tr>
-                <tr><td>General purpose (T, M)</td><td>สมดุล CPU/RAM</td><td>เว็บ, แอปทั่วไป</td></tr>
-                <tr><td>Compute optimized (C)</td><td>CPU</td><td>batch, encoding, game server</td></tr>
-                <tr><td>Memory optimized (R, X)</td><td>RAM</td><td>in-memory DB, cache, SAP HANA</td></tr>
-                <tr><td><strong>Storage optimized (I, D, H)</strong></td><td><strong>Disk IOPS / throughput</strong></td><td><strong>NoSQL, data warehouse, log processing</strong></td></tr>
-                <tr><td>Accelerated (P, G)</td><td>GPU</td><td>ML, graphics</td></tr>
-              </tbody>
-            </table>
-            <h4>Instance Store vs EBS</h4>
-            <table>
-              <tbody>
-                <tr><th></th><th>Instance Store</th><th>EBS</th></tr>
-                <tr><td>ตำแหน่ง</td><td>disk ต่อตรงกับ host (NVMe SSD)</td><td>ต่อผ่าน network</td></tr>
-                <tr><td>ความเร็ว</td><td>IOPS/throughput สูงมาก latency ต่ำ</td><td>ดี แต่ช้ากว่า</td></tr>
-                <tr><td>ข้อมูล</td><td><strong>ชั่วคราว</strong> หายเมื่อ stop/terminate หรือ hardware เสีย</td><td>คงอยู่ (persistent)</td></tr>
-                <tr><td>เหมาะกับ</td><td>cache, buffer, DB ที่ replicate เอง</td><td>ข้อมูลที่ต้องไม่หาย</td></tr>
-              </tbody>
-            </table>
-            <p className="trap">กับดัก: โจทย์ที่บอก &quot;NoSQL replicate ข้อมูลเองหลายชุด + high IOPS + sequential I/O&quot; ต้องตอบ Storage optimized + instance store (ข้อมูลมี copy อื่นแล้วจึงไม่กลัวหาย) | Memory optimized เน้น RAM ไม่ใช่ disk | Compute optimized เน้น CPU</p>
-            <div className="tip">หลักจำ: disk I/O สูง → Storage optimized | RAM ใหญ่ → Memory optimized | CPU หนัก → Compute optimized | ข้อมูลต้องไม่หาย → EBS</div>
+            <div className="tip">หลักจำ: งานค้างให้ worker ทำ → SQS | ประกาศให้ทุกคนรู้ → SNS | ต้องการ replay/stream ปริมาณสูง → Kinesis | ย้าย JMS/AMQP เดิมมา AWS → Amazon MQ</div>
           </>
         ),
       },
@@ -1126,6 +1126,20 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
         ),
       },
       {
+        title: "IAM Role vs IAM Group",
+        body: (
+          <>
+            <table>
+              <tbody>
+                <tr><th>IAM Role</th><th>IAM Group</th></tr>
+                <tr><td>สวมได้ชั่วคราว ไม่มี credential ติดตัว ให้ service/คนนอก/คนละ account assume ได้</td><td>แค่ &quot;ตะกร้า&quot; รวม <strong>IAM User</strong> หลายคนไว้ด้วยกัน เพื่อ attach Policy ครั้งเดียวให้ทุกคนในกลุ่ม</td></tr>
+              </tbody>
+            </table>
+            <p className="trap">กับดัก: Group ไม่ใช่ identity ที่ assume ได้ และไม่มี credential ของตัวเอง — เป็นแค่ตัวจัดกลุ่ม User เท่านั้น</p>
+          </>
+        ),
+      },
+      {
         title: "เมื่อไหร่ควรใช้ Role",
         body: (
           <>
@@ -1141,6 +1155,20 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
         ),
       },
       {
+        title: "Lambda: Execution Role vs Resource-based Policy",
+        body: (
+          <>
+            <table>
+              <tbody>
+                <tr><th>Execution Role</th><th>Resource-based Policy</th></tr>
+                <tr><td>สิทธิ์ที่ติดกับ Lambda function เอง — กำหนดว่า Lambda <strong>&quot;ไปทำอะไรกับ service อื่นได้บ้าง&quot;</strong> (เช่น เขียนลง DynamoDB)</td><td>Policy แปะที่ Lambda — กำหนดว่า <strong>&quot;ใครมีสิทธิ์เรียก Lambda นี้ได้บ้าง&quot;</strong> (เช่น ให้ S3 event หรือ API Gateway เรียกได้)</td></tr>
+              </tbody>
+            </table>
+            <div className="tip">หลักจำ: Execution Role = Lambda มองออกไปข้างนอก | Resource-based Policy = คนนอกมองเข้ามาที่ Lambda</div>
+          </>
+        ),
+      },
+      {
         title: "AWS STS (Security Token Service)",
         body: (
           <>
@@ -1152,6 +1180,35 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
               <li>Caller ที่ authenticated แล้ว (มี IAM credential + สิทธิ์ <code>sts:AssumeRole</code>)</li>
             </ul>
             <p className="trap">STS ไม่รู้จัก LDAP protocol เลย — เชื่อมตรงไม่ได้ไม่ว่าจะเป็น use case ทั่วไปแค่ไหน</p>
+          </>
+        ),
+      },
+      {
+        title: "STS API Actions — เลือกให้ถูกกับใครเป็นคนเรียก",
+        body: (
+          <>
+            <table>
+              <tbody>
+                <tr><th>API</th><th>ใครเรียก / input</th><th>ใช้เมื่อ</th></tr>
+                <tr><td><code>AssumeRole</code></td><td>IAM user/role ที่ authenticated แล้ว (มี AWS credential)</td><td>สวม Role ใน account เดียวกันหรือ <strong>cross-account</strong>, ให้ service/คนนอกขอสิทธิ์ชั่วคราว</td></tr>
+                <tr><td><code>AssumeRoleWithSAML</code></td><td>ผู้ใช้ที่มี <strong>SAML assertion</strong> จาก IdP (เช่น AD FS) — ไม่ต้องมี AWS credential</td><td>Enterprise federation ผ่าน SAML 2.0</td></tr>
+                <tr><td><code>AssumeRoleWithWebIdentity</code></td><td>ผู้ใช้ที่มี <strong>OIDC token</strong> (Google, Facebook, Amazon, Cognito ฯลฯ) — ไม่ต้องมี AWS credential</td><td>Web/mobile identity federation (ปัจจุบันแนะนำใช้ Cognito Identity Pool ครอบ); EKS IRSA ก็ใช้ API นี้</td></tr>
+                <tr><td><code>GetFederationToken</code></td><td><strong>IAM user</strong> (ใช้ long-term credential) — มักเป็น custom identity broker</td><td>ออก credential ชั่วคราวให้ผู้ใช้ภายนอกที่ broker ยืนยันตัวตนแล้ว (ไม่มี IAM user ของตัวเอง)</td></tr>
+                <tr><td><code>GetSessionToken</code></td><td>IAM user (หรือ root) ที่มี long-term credential</td><td>ขอ credential ชั่วคราว<strong>พร้อมยืนยัน MFA</strong> เพื่อเรียก API ที่บังคับ MFA</td></tr>
+                <tr><td><code>GetCallerIdentity</code></td><td>ใครก็ได้ที่มี credential — ไม่ต้องมีสิทธิ์พิเศษ</td><td>เช็คว่า &quot;ตอนนี้ฉันคือใคร&quot; (account ID, ARN, user ID) — เหมือน whoami</td></tr>
+                <tr><td><code>DecodeAuthorizationMessage</code></td><td>ผู้ที่ถูกปฏิเสธสิทธิ์ (มีข้อความ error ที่เข้ารหัส)</td><td>ถอดรหัสข้อความ authorization failure เพื่อดูสาเหตุที่ถูก deny</td></tr>
+              </tbody>
+            </table>
+            <ul>
+              <li>Credential ที่ได้เป็น <strong>ชั่วคราว</strong> ประกอบด้วย Access Key ID + Secret Access Key + <strong>Session Token</strong> และหมดอายุเอง (AssumeRole ตั้งอายุได้ตั้งแต่ 15 นาที จนถึง max session duration ของ role สูงสุด 12 ชั่วโมง; GetFederationToken / GetSessionToken ได้นานกว่า)</li>
+              <li><strong>AssumeRole ต้องผ่านสองด้าน</strong>: Trust policy ของ Role ต้องอนุญาต principal นั้น และ principal ต้องมีสิทธิ์ <code>sts:AssumeRole</code> (ข้าม account ต้องอนุญาตทั้งสองฝั่ง)</li>
+              <li><strong>Session policy</strong>: ใส่ policy เพิ่มตอนเรียกเพื่อ &quot;จำกัดให้แคบลง&quot; — สิทธิ์ที่ได้ = ส่วนที่ซ้อนกัน (intersection) ของสิทธิ์เดิมกับ session policy (ให้สิทธิ์เกินของเดิมไม่ได้)</li>
+              <li><strong>ExternalId</strong> ใช้กับ third party ที่ assume role เข้า account เรา ป้องกัน confused deputy problem</li>
+              <li>ใช้ <strong>regional STS endpoint</strong> แทน global endpoint เพื่อลด latency และเพิ่มความทนทาน</li>
+              <li>Revoke session ที่ออกไปแล้ว: เพิ่ม deny policy ที่ผูกเงื่อนไขเวลาออก token (<code>aws:TokenIssueTime</code>) — เป็นสิ่งที่ปุ่ม &quot;Revoke active sessions&quot; ใน IAM console ทำให้</li>
+            </ul>
+            <p className="trap">กับดัก: ผู้ใช้ที่ authenticate ผ่าน SAML/OIDC แล้ว &quot;ยังไม่มี AWS credential&quot; จึงเรียก AssumeRole ไม่ได้ — ต้องใช้ AssumeRoleWithSAML / AssumeRoleWithWebIdentity | ส่วน LDAP ต่อ STS ตรงๆ ไม่ได้ ต้องมี broker ที่เรียก GetFederationToken หรือ AssumeRole แทน</p>
+            <div className="tip">หลักจำ: มี credential อยู่แล้ว → AssumeRole / GetFederationToken / GetSessionToken | มาพร้อม SAML → WithSAML | มาพร้อม OIDC token → WithWebIdentity | อยากรู้ว่าเป็นใคร → GetCallerIdentity</div>
           </>
         ),
       },
@@ -1189,59 +1246,42 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
         ),
       },
       {
-        title: "IAM Role vs IAM Group",
+        title: "โจทย์สถานการณ์: หลายทีมเข้า Aurora/EFS — IAM Identity Center vs SCP vs Control Tower vs Cognito",
         body: (
           <>
-            <table>
-              <tbody>
-                <tr><th>IAM Role</th><th>IAM Group</th></tr>
-                <tr><td>สวมได้ชั่วคราว ไม่มี credential ติดตัว ให้ service/คนนอก/คนละ account assume ได้</td><td>แค่ &quot;ตะกร้า&quot; รวม <strong>IAM User</strong> หลายคนไว้ด้วยกัน เพื่อ attach Policy ครั้งเดียวให้ทุกคนในกลุ่ม</td></tr>
-              </tbody>
-            </table>
-            <p className="trap">กับดัก: Group ไม่ใช่ identity ที่ assume ได้ และไม่มี credential ของตัวเอง — เป็นแค่ตัวจัดกลุ่ม User เท่านั้น</p>
-          </>
-        ),
-      },
-      {
-        title: "Lambda: Execution Role vs Resource-based Policy",
-        body: (
-          <>
-            <table>
-              <tbody>
-                <tr><th>Execution Role</th><th>Resource-based Policy</th></tr>
-                <tr><td>สิทธิ์ที่ติดกับ Lambda function เอง — กำหนดว่า Lambda <strong>&quot;ไปทำอะไรกับ service อื่นได้บ้าง&quot;</strong> (เช่น เขียนลง DynamoDB)</td><td>Policy แปะที่ Lambda — กำหนดว่า <strong>&quot;ใครมีสิทธิ์เรียก Lambda นี้ได้บ้าง&quot;</strong> (เช่น ให้ S3 event หรือ API Gateway เรียกได้)</td></tr>
-              </tbody>
-            </table>
-            <div className="tip">หลักจำ: Execution Role = Lambda มองออกไปข้างนอก | Resource-based Policy = คนนอกมองเข้ามาที่ Lambda</div>
-          </>
-        ),
-      },
-      {
-        title: "STS API Actions — เลือกให้ถูกกับใครเป็นคนเรียก",
-        body: (
-          <>
-            <table>
-              <tbody>
-                <tr><th>API</th><th>ใครเรียก / input</th><th>ใช้เมื่อ</th></tr>
-                <tr><td><code>AssumeRole</code></td><td>IAM user/role ที่ authenticated แล้ว (มี AWS credential)</td><td>สวม Role ใน account เดียวกันหรือ <strong>cross-account</strong>, ให้ service/คนนอกขอสิทธิ์ชั่วคราว</td></tr>
-                <tr><td><code>AssumeRoleWithSAML</code></td><td>ผู้ใช้ที่มี <strong>SAML assertion</strong> จาก IdP (เช่น AD FS) — ไม่ต้องมี AWS credential</td><td>Enterprise federation ผ่าน SAML 2.0</td></tr>
-                <tr><td><code>AssumeRoleWithWebIdentity</code></td><td>ผู้ใช้ที่มี <strong>OIDC token</strong> (Google, Facebook, Amazon, Cognito ฯลฯ) — ไม่ต้องมี AWS credential</td><td>Web/mobile identity federation (ปัจจุบันแนะนำใช้ Cognito Identity Pool ครอบ); EKS IRSA ก็ใช้ API นี้</td></tr>
-                <tr><td><code>GetFederationToken</code></td><td><strong>IAM user</strong> (ใช้ long-term credential) — มักเป็น custom identity broker</td><td>ออก credential ชั่วคราวให้ผู้ใช้ภายนอกที่ broker ยืนยันตัวตนแล้ว (ไม่มี IAM user ของตัวเอง)</td></tr>
-                <tr><td><code>GetSessionToken</code></td><td>IAM user (หรือ root) ที่มี long-term credential</td><td>ขอ credential ชั่วคราว<strong>พร้อมยืนยัน MFA</strong> เพื่อเรียก API ที่บังคับ MFA</td></tr>
-                <tr><td><code>GetCallerIdentity</code></td><td>ใครก็ได้ที่มี credential — ไม่ต้องมีสิทธิ์พิเศษ</td><td>เช็คว่า &quot;ตอนนี้ฉันคือใคร&quot; (account ID, ARN, user ID) — เหมือน whoami</td></tr>
-                <tr><td><code>DecodeAuthorizationMessage</code></td><td>ผู้ที่ถูกปฏิเสธสิทธิ์ (มีข้อความ error ที่เข้ารหัส)</td><td>ถอดรหัสข้อความ authorization failure เพื่อดูสาเหตุที่ถูก deny</td></tr>
-              </tbody>
-            </table>
+            <p>
+              โจทย์: ต้องการ <strong>centralized authentication + access management</strong> ให้หลายทีม (data science, engineering, compliance)
+              เข้าถึง Aurora และ EFS แบบ <strong>least privilege</strong> และ <strong>ภาระดูแลน้อย</strong>
+              → ตอบ <strong>IAM Identity Center + permission set + group</strong>
+            </p>
+            <pre><code>{`Group (ตามบทบาท) → Permission set (ชุดสิทธิ์ least privilege) → AWS account
+ผู้ใช้ล็อกอินที่เดียว (SSO) แล้วได้สิทธิ์ตามกลุ่มที่สังกัด`}</code></pre>
             <ul>
-              <li>Credential ที่ได้เป็น <strong>ชั่วคราว</strong> ประกอบด้วย Access Key ID + Secret Access Key + <strong>Session Token</strong> และหมดอายุเอง (AssumeRole ตั้งอายุได้ตั้งแต่ 15 นาที จนถึง max session duration ของ role สูงสุด 12 ชั่วโมง; GetFederationToken / GetSessionToken ได้นานกว่า)</li>
-              <li><strong>AssumeRole ต้องผ่านสองด้าน</strong>: Trust policy ของ Role ต้องอนุญาต principal นั้น และ principal ต้องมีสิทธิ์ <code>sts:AssumeRole</code> (ข้าม account ต้องอนุญาตทั้งสองฝั่ง)</li>
-              <li><strong>Session policy</strong>: ใส่ policy เพิ่มตอนเรียกเพื่อ &quot;จำกัดให้แคบลง&quot; — สิทธิ์ที่ได้ = ส่วนที่ซ้อนกัน (intersection) ของสิทธิ์เดิมกับ session policy (ให้สิทธิ์เกินของเดิมไม่ได้)</li>
-              <li><strong>ExternalId</strong> ใช้กับ third party ที่ assume role เข้า account เรา ป้องกัน confused deputy problem</li>
-              <li>ใช้ <strong>regional STS endpoint</strong> แทน global endpoint เพื่อลด latency และเพิ่มความทนทาน</li>
-              <li>Revoke session ที่ออกไปแล้ว: เพิ่ม deny policy ที่ผูกเงื่อนไขเวลาออก token (<code>aws:TokenIssueTime</code>) — เป็นสิ่งที่ปุ่ม &quot;Revoke active sessions&quot; ใน IAM console ทำให้</li>
+              <li><strong>Permission set</strong> = ชุดสิทธิ์สำเร็จรูป กำหนดสิทธิ์ละเอียดต่อบริการได้</li>
+              <li>ใส่คนเข้า group แล้วสิทธิ์ตามมาเอง ไม่ต้องสร้าง IAM user/role ทีละคนทีละ account</li>
+              <li>ใช้ directory ในตัว หรือต่อ Active Directory / IdP ภายนอก (Okta, Entra ID) ก็ได้</li>
             </ul>
-            <p className="trap">กับดัก: ผู้ใช้ที่ authenticate ผ่าน SAML/OIDC แล้ว &quot;ยังไม่มี AWS credential&quot; จึงเรียก AssumeRole ไม่ได้ — ต้องใช้ AssumeRoleWithSAML / AssumeRoleWithWebIdentity | ส่วน LDAP ต่อ STS ตรงๆ ไม่ได้ ต้องมี broker ที่เรียก GetFederationToken หรือ AssumeRole แทน</p>
-            <div className="tip">หลักจำ: มี credential อยู่แล้ว → AssumeRole / GetFederationToken / GetSessionToken | มาพร้อม SAML → WithSAML | มาพร้อม OIDC token → WithWebIdentity | อยากรู้ว่าเป็นใคร → GetCallerIdentity</div>
+            <h4>ทำไมตัวเลือกอื่นผิด</h4>
+            <table>
+              <tbody>
+                <tr><th>ตัวเลือก</th><th>ผิดเพราะ</th></tr>
+                <tr><td>Control Tower + SCP + IAM role ทุก account</td><td>SCP เป็นเพดาน ไม่ได้ให้สิทธิ์ใคร ต้องมี IAM ให้สิทธิ์อีกชั้น และไม่มี login ส่วนกลาง ภาระสูง</td></tr>
+                <tr><td>Cognito User Pools + Identity Pools</td><td>ออกแบบสำหรับผู้ใช้ของแอป ไม่ใช่พนักงานที่เข้า AWS</td></tr>
+                <tr><td>แยก account ต่อทีม + cross-account role</td><td>ทำได้แต่ภาระดูแลสูง ไม่มี login ส่วนกลาง ขัดกับ minimize overhead</td></tr>
+              </tbody>
+            </table>
+            <h4>แยก 4 บริการให้ออก</h4>
+            <table>
+              <tbody>
+                <tr><th>บริการ</th><th>ทำหน้าที่</th></tr>
+                <tr><td><strong>IAM Identity Center</strong></td><td>SSO + จัดสิทธิ์พนักงานเข้าหลาย account/แอปองค์กร</td></tr>
+                <tr><td><strong>SCP</strong> (Organizations)</td><td>ตั้งเพดานสิทธิ์สูงสุดของ account/OU <strong>ไม่ได้ให้สิทธิ์</strong></td></tr>
+                <tr><td><strong>Control Tower</strong></td><td>ตั้งโครงสร้างหลาย account + guardrail ไม่ใช่ระบบจัดการตัวตนของคน</td></tr>
+                <tr><td><strong>Cognito</strong></td><td>ผู้ใช้ของ <strong>แอปเรา</strong> (สมัคร/ล็อกอิน/social login)</td></tr>
+              </tbody>
+            </table>
+            <p className="trap">กับดัก: SCP ไม่ใช่การให้สิทธิ์ | Cognito ไม่ใช่ของพนักงานที่เข้า AWS console | เห็น &quot;หลายทีม + หลาย account + login ที่เดียว + least privilege&quot; ให้นึกถึง Identity Center</p>
+            <div className="tip">หลักจำ: พนักงาน → Identity Center | ผู้ใช้แอป → Cognito | เพดานสิทธิ์ → SCP | โครงสร้างหลาย account → Control Tower</div>
           </>
         ),
       },
@@ -1297,46 +1337,6 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
           </>
         ),
       },
-      {
-        title: "โจทย์สถานการณ์: หลายทีมเข้า Aurora/EFS — IAM Identity Center vs SCP vs Control Tower vs Cognito",
-        body: (
-          <>
-            <p>
-              โจทย์: ต้องการ <strong>centralized authentication + access management</strong> ให้หลายทีม (data science, engineering, compliance)
-              เข้าถึง Aurora และ EFS แบบ <strong>least privilege</strong> และ <strong>ภาระดูแลน้อย</strong>
-              → ตอบ <strong>IAM Identity Center + permission set + group</strong>
-            </p>
-            <pre><code>{`Group (ตามบทบาท) → Permission set (ชุดสิทธิ์ least privilege) → AWS account
-ผู้ใช้ล็อกอินที่เดียว (SSO) แล้วได้สิทธิ์ตามกลุ่มที่สังกัด`}</code></pre>
-            <ul>
-              <li><strong>Permission set</strong> = ชุดสิทธิ์สำเร็จรูป กำหนดสิทธิ์ละเอียดต่อบริการได้</li>
-              <li>ใส่คนเข้า group แล้วสิทธิ์ตามมาเอง ไม่ต้องสร้าง IAM user/role ทีละคนทีละ account</li>
-              <li>ใช้ directory ในตัว หรือต่อ Active Directory / IdP ภายนอก (Okta, Entra ID) ก็ได้</li>
-            </ul>
-            <h4>ทำไมตัวเลือกอื่นผิด</h4>
-            <table>
-              <tbody>
-                <tr><th>ตัวเลือก</th><th>ผิดเพราะ</th></tr>
-                <tr><td>Control Tower + SCP + IAM role ทุก account</td><td>SCP เป็นเพดาน ไม่ได้ให้สิทธิ์ใคร ต้องมี IAM ให้สิทธิ์อีกชั้น และไม่มี login ส่วนกลาง ภาระสูง</td></tr>
-                <tr><td>Cognito User Pools + Identity Pools</td><td>ออกแบบสำหรับผู้ใช้ของแอป ไม่ใช่พนักงานที่เข้า AWS</td></tr>
-                <tr><td>แยก account ต่อทีม + cross-account role</td><td>ทำได้แต่ภาระดูแลสูง ไม่มี login ส่วนกลาง ขัดกับ minimize overhead</td></tr>
-              </tbody>
-            </table>
-            <h4>แยก 4 บริการให้ออก</h4>
-            <table>
-              <tbody>
-                <tr><th>บริการ</th><th>ทำหน้าที่</th></tr>
-                <tr><td><strong>IAM Identity Center</strong></td><td>SSO + จัดสิทธิ์พนักงานเข้าหลาย account/แอปองค์กร</td></tr>
-                <tr><td><strong>SCP</strong> (Organizations)</td><td>ตั้งเพดานสิทธิ์สูงสุดของ account/OU <strong>ไม่ได้ให้สิทธิ์</strong></td></tr>
-                <tr><td><strong>Control Tower</strong></td><td>ตั้งโครงสร้างหลาย account + guardrail ไม่ใช่ระบบจัดการตัวตนของคน</td></tr>
-                <tr><td><strong>Cognito</strong></td><td>ผู้ใช้ของ <strong>แอปเรา</strong> (สมัคร/ล็อกอิน/social login)</td></tr>
-              </tbody>
-            </table>
-            <p className="trap">กับดัก: SCP ไม่ใช่การให้สิทธิ์ | Cognito ไม่ใช่ของพนักงานที่เข้า AWS console | เห็น &quot;หลายทีม + หลาย account + login ที่เดียว + least privilege&quot; ให้นึกถึง Identity Center</p>
-            <div className="tip">หลักจำ: พนักงาน → Identity Center | ผู้ใช้แอป → Cognito | เพดานสิทธิ์ → SCP | โครงสร้างหลาย account → Control Tower</div>
-          </>
-        ),
-      },
     ],
   },
   {
@@ -1344,12 +1344,70 @@ Cutover → ใช้ EC2 บน AWS แทน (downtime สั้นมาก)`
     title: "Management & Monitoring",
     cards: [
       {
-        title: "AWS CloudFormation (CFN)",
+        title: "CloudWatch — Metric ที่มีให้ดูเอง (Default) vs ที่ต้องติดตั้ง Agent",
         body: (
           <>
-            <p>Infrastructure as Code — เขียน template (YAML/JSON) แบบ declarative เพื่อ model/provision/version-control infra ทั้งหมดในไฟล์ text เดียว</p>
-            <p>เทียบได้กับ Kubernetes <code>deployment.yaml</code> แต่ CFN คุมทั้ง AWS account ส่วน K8s YAML คุมแค่ภายใน cluster</p>
-            <p className="trap">ข้อจำกัด: deploy stack ใหม่ตอนเกิด failure จริงช้ากว่า resource ที่ pre-provisioned ไว้ล่วงหน้า</p>
+            <p><strong>หลักคิด:</strong> AWS มองเห็นเฉพาะสิ่งที่อยู่ <em>&quot;ข้างนอก&quot;</em> instance (ระดับ hypervisor / service) แต่มองไม่เห็นสิ่งที่อยู่ <em>&quot;ข้างใน&quot;</em> ระบบปฏิบัติการ (RAM, disk ที่ใช้ไป, process, log ไฟล์) ต้องติดตั้ง <strong>CloudWatch Agent</strong> ให้ส่งข้อมูลออกมา</p>
+            <h4>EC2 — ดูได้เลยโดยไม่ต้องลง Agent</h4>
+            <table>
+              <tbody>
+                <tr><th>กลุ่ม</th><th>Metric</th></tr>
+                <tr><td>CPU</td><td><code>CPUUtilization</code> (T-series มี <code>CPUCreditBalance</code>, <code>CPUCreditUsage</code> ด้วย)</td></tr>
+                <tr><td>Network</td><td><code>NetworkIn</code>, <code>NetworkOut</code>, <code>NetworkPacketsIn/Out</code></td></tr>
+                <tr><td>Disk (instance store)</td><td><code>DiskReadOps</code>, <code>DiskWriteOps</code>, <code>DiskReadBytes</code>, <code>DiskWriteBytes</code> (ใช้กับ instance store เท่านั้น ส่วน EBS ดูจาก metric ของ EBS volume)</td></tr>
+                <tr><td>Status check</td><td><code>StatusCheckFailed</code> (แยก Instance / System)</td></tr>
+              </tbody>
+            </table>
+            <p>ความถี่: <strong>Basic monitoring</strong> ทุก 5 นาที (ฟรี) | <strong>Detailed monitoring</strong> ทุก 1 นาที (เสียเงินเพิ่ม ต้องเปิดเอง)</p>
+            <h4>EC2 — ต้องติดตั้ง CloudWatch Agent จึงจะเห็น</h4>
+            <table>
+              <tbody>
+                <tr><th>สิ่งที่ต้องการดู</th><th>เหตุผล</th></tr>
+                <tr><td><strong>Memory (RAM) utilization</strong></td><td>hypervisor มองไม่เห็นว่า OS ใช้ RAM เท่าไร (ออกสอบบ่อยที่สุด)</td></tr>
+                <tr><td><strong>Disk space / พื้นที่ว่าง (% used)</strong></td><td>EBS metric บอกแค่ IOPS/throughput ไม่บอกว่าไฟล์ระบบเต็มกี่ %</td></tr>
+                <tr><td>Swap, process / thread, TCP connection</td><td>อยู่ในระดับ OS</td></tr>
+                <tr><td><strong>Log ไฟล์ของแอป/OS</strong> (ส่งเข้า CloudWatch Logs)</td><td>Agent เป็นตัวอ่านไฟล์แล้วส่งขึ้นไป</td></tr>
+                <tr><td>Custom metric ของแอป</td><td>ผ่าน agent (StatsD / collectd) หรือเรียก <code>PutMetricData</code> เอง</td></tr>
+                <tr><td>Windows performance counter</td><td>agent บน Windows</td></tr>
+                <tr><td>Server <strong>on-premises</strong></td><td>ติดตั้ง agent บนเครื่องนอก AWS ได้ (ต้องมีสิทธิ์ผ่าน IAM)</td></tr>
+              </tbody>
+            </table>
+            <ul>
+              <li>Agent ต้องมี <strong>IAM role</strong> (เช่น policy <code>CloudWatchAgentServerPolicy</code>) แนบกับ EC2 เพื่อส่งข้อมูลเข้า CloudWatch</li>
+              <li>ติดตั้ง/ตั้งค่าแบบรวมศูนย์ผ่าน <strong>Systems Manager</strong> (Run Command / State Manager) และเก็บ config ใน <strong>Parameter Store</strong> ได้</li>
+              <li><strong>CloudWatch Agent</strong> (unified agent) แทน monitoring script รุ่นเก่า และเก็บได้ทั้ง metric + log ในตัวเดียว</li>
+            </ul>
+            <h4>บริการอื่น — Metric ที่มีให้เองโดยไม่ต้องลง agent</h4>
+            <table>
+              <tbody>
+                <tr><th>บริการ</th><th>ตัวอย่าง metric ที่ได้เอง</th><th>ที่ไม่ได้ / ต้องเปิดเพิ่ม</th></tr>
+                <tr><td>RDS</td><td>CPUUtilization, FreeStorageSpace, FreeableMemory, DatabaseConnections, ReadIOPS/WriteIOPS</td><td><strong>Enhanced Monitoring</strong> = metric ระดับ OS แบบละเอียด (ละเอียดสุดถึง 1 วินาที) ต้องเปิดเอง</td></tr>
+                <tr><td>EBS volume</td><td>VolumeReadOps/WriteOps, VolumeQueueLength, VolumeThroughputPercentage</td><td>พื้นที่ใช้ไปในระบบไฟล์ → ต้องใช้ agent</td></tr>
+                <tr><td>ELB / ALB</td><td>RequestCount, TargetResponseTime, HealthyHostCount, HTTPCode_ELB_5XX</td><td>-</td></tr>
+                <tr><td>Lambda</td><td>Invocations, Errors, Duration, Throttles, ConcurrentExecutions</td><td>log ของ function ส่งเข้า CloudWatch Logs ให้เอง</td></tr>
+                <tr><td>DynamoDB</td><td>ConsumedRead/WriteCapacityUnits, ThrottledRequests</td><td>-</td></tr>
+                <tr><td>SQS</td><td>ApproximateNumberOfMessagesVisible, ApproximateAgeOfOldestMessage</td><td>-</td></tr>
+                <tr><td>S3</td><td>BucketSizeBytes, NumberOfObjects (รายวัน)</td><td><strong>Request metrics</strong> (ราย prefix) ต้องเปิดเอง และเสียเงิน</td></tr>
+                <tr><td>Billing</td><td>EstimatedCharges (ต้องเปิด billing alerts และดูได้ที่ us-east-1)</td><td>-</td></tr>
+              </tbody>
+            </table>
+            <h4>สรุปเทียบ EC2 vs RDS — ดูอะไรได้เอง / ต้องทำอะไรเพิ่ม</h4>
+            <table>
+              <tbody>
+                <tr><th>อยากดู</th><th>EC2 (OS เป็นของเรา)</th><th>RDS (AWS ดูแล OS)</th></tr>
+                <tr><td>CPU</td><td>ดูได้เลย</td><td>ดูได้เลย</td></tr>
+                <tr><td>Memory</td><td><strong>ต้องลง agent</strong></td><td>ดูได้เลย (<code>FreeableMemory</code>)</td></tr>
+                <tr><td>พื้นที่ disk</td><td><strong>ต้องลง agent</strong> (disk space %)</td><td>ดูได้เลย (<code>FreeStorageSpace</code>)</td></tr>
+                <tr><td>Network</td><td>ดูได้เลย</td><td>ดูได้เลย</td></tr>
+                <tr><td>ราย process</td><td><strong>ต้องลง agent</strong></td><td><strong>Enhanced Monitoring</strong> (OS processes, RDS child processes ละเอียดถึง 1 วินาที)</td></tr>
+                <tr><td>Log</td><td><strong>ต้องลง agent</strong> ส่งเข้า CloudWatch Logs</td><td>export log (error, slow query) เข้า CloudWatch Logs ได้</td></tr>
+                <tr><td>Query ที่ทำให้ DB ช้า</td><td>-</td><td><strong>Performance Insights</strong></td></tr>
+              </tbody>
+            </table>
+            <p><strong>โจทย์ตัวอย่าง:</strong> ต้องการ enhanced monitoring metric ของ RDS ที่แม่นยำกว่า (เลือก 2) → <strong>OS processes</strong> และ <strong>RDS child processes</strong> ส่วน CPU Utilization, Database Connections, Freeable Memory เป็น metric ปกติของ CloudWatch อยู่แล้ว</p>
+            <p>ติดตั้ง agent บน RDS เองไม่ได้ (managed service) | Enhanced Monitoring ต้องเปิดเอง และมีค่าใช้จ่ายจาก log ที่เก็บ | ดู &quot;ราย process / ละเอียดระดับ OS&quot; = Enhanced Monitoring, ดู &quot;ภาพรวมของ instance&quot; = metric ปกติ</p>
+            <p className="trap">กับดัก: ต้องการ alarm เมื่อ <strong>memory</strong> หรือ <strong>disk เต็ม</strong> บน EC2 → ต้องติดตั้ง CloudWatch agent แล้วค่อยสร้าง alarm จาก custom metric นั้น ไม่มี default metric ให้ | <code>DiskReadOps</code> ที่เห็นเองเป็นของ instance store ไม่ใช่ EBS | CloudWatch ไม่ได้เก็บ &quot;ใครทำอะไร&quot; (นั่นคือ CloudTrail)</p>
+            <div className="tip">หลักจำ: CPU / Network / Status check → ดูได้เลย | Memory / Disk space / Log ในเครื่อง / process → ต้อง Agent | RDS อยากเห็นระดับ OS → Enhanced Monitoring | ความถี่ default EC2 = 5 นาที (Detailed = 1 นาที) (ควรตรวจรายละเอียดกับเอกสาร AWS ล่าสุดก่อนสอบ)</div>
           </>
         ),
       },
@@ -1446,74 +1504,6 @@ Lambda → deactivate + delete key`}</pre>
         ),
       },
       {
-        title: "CloudWatch — Metric ที่มีให้ดูเอง (Default) vs ที่ต้องติดตั้ง Agent",
-        body: (
-          <>
-            <p><strong>หลักคิด:</strong> AWS มองเห็นเฉพาะสิ่งที่อยู่ <em>&quot;ข้างนอก&quot;</em> instance (ระดับ hypervisor / service) แต่มองไม่เห็นสิ่งที่อยู่ <em>&quot;ข้างใน&quot;</em> ระบบปฏิบัติการ (RAM, disk ที่ใช้ไป, process, log ไฟล์) ต้องติดตั้ง <strong>CloudWatch Agent</strong> ให้ส่งข้อมูลออกมา</p>
-            <h4>EC2 — ดูได้เลยโดยไม่ต้องลง Agent</h4>
-            <table>
-              <tbody>
-                <tr><th>กลุ่ม</th><th>Metric</th></tr>
-                <tr><td>CPU</td><td><code>CPUUtilization</code> (T-series มี <code>CPUCreditBalance</code>, <code>CPUCreditUsage</code> ด้วย)</td></tr>
-                <tr><td>Network</td><td><code>NetworkIn</code>, <code>NetworkOut</code>, <code>NetworkPacketsIn/Out</code></td></tr>
-                <tr><td>Disk (instance store)</td><td><code>DiskReadOps</code>, <code>DiskWriteOps</code>, <code>DiskReadBytes</code>, <code>DiskWriteBytes</code> (ใช้กับ instance store เท่านั้น ส่วน EBS ดูจาก metric ของ EBS volume)</td></tr>
-                <tr><td>Status check</td><td><code>StatusCheckFailed</code> (แยก Instance / System)</td></tr>
-              </tbody>
-            </table>
-            <p>ความถี่: <strong>Basic monitoring</strong> ทุก 5 นาที (ฟรี) | <strong>Detailed monitoring</strong> ทุก 1 นาที (เสียเงินเพิ่ม ต้องเปิดเอง)</p>
-            <h4>EC2 — ต้องติดตั้ง CloudWatch Agent จึงจะเห็น</h4>
-            <table>
-              <tbody>
-                <tr><th>สิ่งที่ต้องการดู</th><th>เหตุผล</th></tr>
-                <tr><td><strong>Memory (RAM) utilization</strong></td><td>hypervisor มองไม่เห็นว่า OS ใช้ RAM เท่าไร (ออกสอบบ่อยที่สุด)</td></tr>
-                <tr><td><strong>Disk space / พื้นที่ว่าง (% used)</strong></td><td>EBS metric บอกแค่ IOPS/throughput ไม่บอกว่าไฟล์ระบบเต็มกี่ %</td></tr>
-                <tr><td>Swap, process / thread, TCP connection</td><td>อยู่ในระดับ OS</td></tr>
-                <tr><td><strong>Log ไฟล์ของแอป/OS</strong> (ส่งเข้า CloudWatch Logs)</td><td>Agent เป็นตัวอ่านไฟล์แล้วส่งขึ้นไป</td></tr>
-                <tr><td>Custom metric ของแอป</td><td>ผ่าน agent (StatsD / collectd) หรือเรียก <code>PutMetricData</code> เอง</td></tr>
-                <tr><td>Windows performance counter</td><td>agent บน Windows</td></tr>
-                <tr><td>Server <strong>on-premises</strong></td><td>ติดตั้ง agent บนเครื่องนอก AWS ได้ (ต้องมีสิทธิ์ผ่าน IAM)</td></tr>
-              </tbody>
-            </table>
-            <ul>
-              <li>Agent ต้องมี <strong>IAM role</strong> (เช่น policy <code>CloudWatchAgentServerPolicy</code>) แนบกับ EC2 เพื่อส่งข้อมูลเข้า CloudWatch</li>
-              <li>ติดตั้ง/ตั้งค่าแบบรวมศูนย์ผ่าน <strong>Systems Manager</strong> (Run Command / State Manager) และเก็บ config ใน <strong>Parameter Store</strong> ได้</li>
-              <li><strong>CloudWatch Agent</strong> (unified agent) แทน monitoring script รุ่นเก่า และเก็บได้ทั้ง metric + log ในตัวเดียว</li>
-            </ul>
-            <h4>บริการอื่น — Metric ที่มีให้เองโดยไม่ต้องลง agent</h4>
-            <table>
-              <tbody>
-                <tr><th>บริการ</th><th>ตัวอย่าง metric ที่ได้เอง</th><th>ที่ไม่ได้ / ต้องเปิดเพิ่ม</th></tr>
-                <tr><td>RDS</td><td>CPUUtilization, FreeStorageSpace, FreeableMemory, DatabaseConnections, ReadIOPS/WriteIOPS</td><td><strong>Enhanced Monitoring</strong> = metric ระดับ OS แบบละเอียด (ละเอียดสุดถึง 1 วินาที) ต้องเปิดเอง</td></tr>
-                <tr><td>EBS volume</td><td>VolumeReadOps/WriteOps, VolumeQueueLength, VolumeThroughputPercentage</td><td>พื้นที่ใช้ไปในระบบไฟล์ → ต้องใช้ agent</td></tr>
-                <tr><td>ELB / ALB</td><td>RequestCount, TargetResponseTime, HealthyHostCount, HTTPCode_ELB_5XX</td><td>-</td></tr>
-                <tr><td>Lambda</td><td>Invocations, Errors, Duration, Throttles, ConcurrentExecutions</td><td>log ของ function ส่งเข้า CloudWatch Logs ให้เอง</td></tr>
-                <tr><td>DynamoDB</td><td>ConsumedRead/WriteCapacityUnits, ThrottledRequests</td><td>-</td></tr>
-                <tr><td>SQS</td><td>ApproximateNumberOfMessagesVisible, ApproximateAgeOfOldestMessage</td><td>-</td></tr>
-                <tr><td>S3</td><td>BucketSizeBytes, NumberOfObjects (รายวัน)</td><td><strong>Request metrics</strong> (ราย prefix) ต้องเปิดเอง และเสียเงิน</td></tr>
-                <tr><td>Billing</td><td>EstimatedCharges (ต้องเปิด billing alerts และดูได้ที่ us-east-1)</td><td>-</td></tr>
-              </tbody>
-            </table>
-            <h4>สรุปเทียบ EC2 vs RDS — ดูอะไรได้เอง / ต้องทำอะไรเพิ่ม</h4>
-            <table>
-              <tbody>
-                <tr><th>อยากดู</th><th>EC2 (OS เป็นของเรา)</th><th>RDS (AWS ดูแล OS)</th></tr>
-                <tr><td>CPU</td><td>ดูได้เลย</td><td>ดูได้เลย</td></tr>
-                <tr><td>Memory</td><td><strong>ต้องลง agent</strong></td><td>ดูได้เลย (<code>FreeableMemory</code>)</td></tr>
-                <tr><td>พื้นที่ disk</td><td><strong>ต้องลง agent</strong> (disk space %)</td><td>ดูได้เลย (<code>FreeStorageSpace</code>)</td></tr>
-                <tr><td>Network</td><td>ดูได้เลย</td><td>ดูได้เลย</td></tr>
-                <tr><td>ราย process</td><td><strong>ต้องลง agent</strong></td><td><strong>Enhanced Monitoring</strong> (OS processes, RDS child processes ละเอียดถึง 1 วินาที)</td></tr>
-                <tr><td>Log</td><td><strong>ต้องลง agent</strong> ส่งเข้า CloudWatch Logs</td><td>export log (error, slow query) เข้า CloudWatch Logs ได้</td></tr>
-                <tr><td>Query ที่ทำให้ DB ช้า</td><td>-</td><td><strong>Performance Insights</strong></td></tr>
-              </tbody>
-            </table>
-            <p><strong>โจทย์ตัวอย่าง:</strong> ต้องการ enhanced monitoring metric ของ RDS ที่แม่นยำกว่า (เลือก 2) → <strong>OS processes</strong> และ <strong>RDS child processes</strong> ส่วน CPU Utilization, Database Connections, Freeable Memory เป็น metric ปกติของ CloudWatch อยู่แล้ว</p>
-            <p>ติดตั้ง agent บน RDS เองไม่ได้ (managed service) | Enhanced Monitoring ต้องเปิดเอง และมีค่าใช้จ่ายจาก log ที่เก็บ | ดู &quot;ราย process / ละเอียดระดับ OS&quot; = Enhanced Monitoring, ดู &quot;ภาพรวมของ instance&quot; = metric ปกติ</p>
-            <p className="trap">กับดัก: ต้องการ alarm เมื่อ <strong>memory</strong> หรือ <strong>disk เต็ม</strong> บน EC2 → ต้องติดตั้ง CloudWatch agent แล้วค่อยสร้าง alarm จาก custom metric นั้น ไม่มี default metric ให้ | <code>DiskReadOps</code> ที่เห็นเองเป็นของ instance store ไม่ใช่ EBS | CloudWatch ไม่ได้เก็บ &quot;ใครทำอะไร&quot; (นั่นคือ CloudTrail)</p>
-            <div className="tip">หลักจำ: CPU / Network / Status check → ดูได้เลย | Memory / Disk space / Log ในเครื่อง / process → ต้อง Agent | RDS อยากเห็นระดับ OS → Enhanced Monitoring | ความถี่ default EC2 = 5 นาที (Detailed = 1 นาที) (ควรตรวจรายละเอียดกับเอกสาร AWS ล่าสุดก่อนสอบ)</div>
-          </>
-        ),
-      },
-      {
         title: "AWS Health + EventBridge + SNS — แจ้งเตือนเหตุการณ์ของ AWS ล่วงหน้า",
         body: (
           <>
@@ -1536,6 +1526,16 @@ Lambda → deactivate + delete key`}</pre>
             </table>
             <p className="trap">กับดัก: &quot;status change ของ EC2&quot; = เหตุการณ์ที่เกิดไปแล้ว ไม่ใช่แจ้งล่วงหน้า | Lambda ตั้งเวลา poll Health Dashboard ทุก 24 ชม. = ซ้ำซ้อนและอาจพลาดเหตุการณ์ | สั่ง restart อัตโนมัติกับแอป mission-critical ไม่ได้อยู่ในข้อกำหนดและเสี่ยง</p>
             <div className="tip">หลักจำ: &quot;แจ้งล่วงหน้าเหตุการณ์ของ AWS ที่กระทบ resource เรา&quot; → AWS Health + EventBridge + SNS | อยากได้ action อัตโนมัติค่อยเพิ่ม Lambda/SSM เป็น target</div>
+          </>
+        ),
+      },
+      {
+        title: "AWS CloudFormation (CFN)",
+        body: (
+          <>
+            <p>Infrastructure as Code — เขียน template (YAML/JSON) แบบ declarative เพื่อ model/provision/version-control infra ทั้งหมดในไฟล์ text เดียว</p>
+            <p>เทียบได้กับ Kubernetes <code>deployment.yaml</code> แต่ CFN คุมทั้ง AWS account ส่วน K8s YAML คุมแค่ภายใน cluster</p>
+            <p className="trap">ข้อจำกัด: deploy stack ใหม่ตอนเกิด failure จริงช้ากว่า resource ที่ pre-provisioned ไว้ล่วงหน้า</p>
           </>
         ),
       },
@@ -1632,6 +1632,66 @@ Lambda → deactivate + delete key`}</pre>
             </table>
             <p>สูตรเช็ค FT ข้าม AZ: จำนวนรวมทุก AZ − จำนวนใน AZ ที่มากที่สุด ต้องยังไม่น้อยกว่าจำนวนที่โจทย์บังคับ (เช่น (3,3,3) ต้องการ 6 ผ่าน, (2,2,2) ไม่ผ่าน)</p>
             <div className="tip">หลักจำ: โจทย์เน้น &quot;ไม่มี downtime เลย / ทนต่อความล้มเหลวของ AZ&quot; → Fault Tolerance (ต้องมีสำรองเกินพอ) | เน้น &quot;กลับมาใช้งานได้อัตโนมัติ&quot; → High Availability</div>
+          </>
+        ),
+      },
+      {
+        title: "ALB — Listener, Rule, Target Group, Redirect HTTP→HTTPS และ ALB vs NLB",
+        body: (
+          <>
+            <p>
+              <strong>ALB (Application Load Balancer)</strong> ทำงานที่ Layer 7 (HTTP/HTTPS) อ่าน host, path, header ได้
+              แล้วกระจาย request ไปยัง target (EC2, container, Lambda, IP)
+            </p>
+            <h4>องค์ประกอบ (ตามลำดับที่ request ไหลผ่าน)</h4>
+            <table>
+              <tbody>
+                <tr><th>ส่วน</th><th>หน้าที่</th></tr>
+                <tr><td><strong>Listener</strong></td><td>รอรับ connection ตาม protocol + port (เช่น HTTP:80, HTTPS:443) — <strong>หนึ่ง port/protocol มีได้หนึ่ง listener ต่อ ALB</strong></td></tr>
+                <tr><td><strong>Rule</strong></td><td>condition (host, path, header, query, source IP) + action เรียงตาม priority ไม่ตรงใช้ default rule</td></tr>
+                <tr><td><strong>Action</strong></td><td>forward ไป target group | redirect | fixed-response | authenticate (Cognito/OIDC)</td></tr>
+                <tr><td><strong>Target Group</strong></td><td>กลุ่มปลายทาง + health check ส่งเฉพาะ target ที่ healthy</td></tr>
+              </tbody>
+            </table>
+            <pre><code>{`ผู้ใช้ → ALB (Listener 443) → Rule: /api/*  → Target Group "api"
+                            → Rule: host shop.example.com → Target Group "shop"
+                            → default → Target Group "web"`}</code></pre>
+            <h4>Redirect HTTP → HTTPS</h4>
+            <ul>
+              <li>ไปแก้ที่ <strong>HTTP listener (port 80) ตัวเดิม</strong> ตั้ง action เป็น redirect (301/302) ไป HTTPS:443</li>
+              <li>HTTPS:443 ตั้ง forward ไป target group พร้อม certificate จาก ACM</li>
+              <li>ถ้าเฉพาะ domain ใหม่ ให้เพิ่ม listener rule บน port 80 ที่มี condition เป็น host header</li>
+            </ul>
+            <p className="trap">กับดัก: สร้าง listener ซ้ำบน port เดิมไม่ได้ | ตั้ง redirect บน 443 จับ traffic HTTP ไม่ได้ เพราะ HTTP เข้ามาที่ 80 | redirect จาก 443 ไป 80 ทิศทางกลับด้าน</p>
+            <h4>ฟีเจอร์ที่ออกสอบบ่อย</h4>
+            <ul>
+              <li><strong>HTTPS termination:</strong> ALB ถอดรหัส TLS ด้วย certificate จาก ACM</li>
+              <li><strong>SNI:</strong> listener เดียวใส่ได้หลาย certificate สำหรับหลาย domain</li>
+              <li><strong>Client IP:</strong> server หลังบ้านเห็น IP ของ ALB ต้องอ่านจาก header <code>X-Forwarded-For</code></li>
+              <li><strong>Multi-AZ:</strong> ต้องเลือกอย่างน้อย 2 subnet คนละ AZ</li>
+              <li><strong>Sticky session</strong> ผ่าน cookie | รองรับ WebSocket และ HTTP/2</li>
+              <li><strong>ไม่มี static IP:</strong> ใช้ DNS name ถ้าต้องการ IP คงที่ใช้ NLB หรือ Global Accelerator</li>
+            </ul>
+            <h4>Route 53 vs ALB — ทำงานคนละชั้น</h4>
+            <table>
+              <tbody>
+                <tr><th></th><th>Route 53</th><th>ALB</th></tr>
+                <tr><td>ทำงานตอนไหน</td><td>ก่อนเชื่อมต่อ (DNS: ชื่อ → IP)</td><td>หลังเชื่อมต่อ (request HTTP เข้ามาแล้ว)</td></tr>
+                <tr><td>ตัดสินจาก</td><td>ชื่อ domain + policy + health check</td><td>host, path, header, query</td></tr>
+                <tr><td>เห็น path ไหม</td><td>ไม่เห็น</td><td>เห็น</td></tr>
+              </tbody>
+            </table>
+            <h4>ALB vs NLB</h4>
+            <table>
+              <tbody>
+                <tr><th></th><th>ALB</th><th>NLB</th></tr>
+                <tr><td>Layer</td><td>7 (HTTP/HTTPS)</td><td>4 (TCP/UDP/TLS)</td></tr>
+                <tr><td>Routing</td><td>host/path/header</td><td>port/protocol</td></tr>
+                <tr><td>Static / Elastic IP</td><td>ไม่มี</td><td>มี</td></tr>
+                <tr><td>เหมาะกับ</td><td>เว็บ, microservices, container</td><td>TCP/UDP performance สูง, ต้อง IP คงที่</td></tr>
+              </tbody>
+            </table>
+            <div className="tip">หลักจำ: redirect HTTP→HTTPS ที่ listener 80 | แยกตาม path/domain → ALB | ต้อง IP คงที่หรือ TCP/UDP → NLB | route ตาม URL path ไม่ใช่งาน Route 53</div>
           </>
         ),
       },
@@ -1738,66 +1798,6 @@ Lambda → deactivate + delete key`}</pre>
           </>
         ),
       },
-      {
-        title: "ALB — Listener, Rule, Target Group, Redirect HTTP→HTTPS และ ALB vs NLB",
-        body: (
-          <>
-            <p>
-              <strong>ALB (Application Load Balancer)</strong> ทำงานที่ Layer 7 (HTTP/HTTPS) อ่าน host, path, header ได้
-              แล้วกระจาย request ไปยัง target (EC2, container, Lambda, IP)
-            </p>
-            <h4>องค์ประกอบ (ตามลำดับที่ request ไหลผ่าน)</h4>
-            <table>
-              <tbody>
-                <tr><th>ส่วน</th><th>หน้าที่</th></tr>
-                <tr><td><strong>Listener</strong></td><td>รอรับ connection ตาม protocol + port (เช่น HTTP:80, HTTPS:443) — <strong>หนึ่ง port/protocol มีได้หนึ่ง listener ต่อ ALB</strong></td></tr>
-                <tr><td><strong>Rule</strong></td><td>condition (host, path, header, query, source IP) + action เรียงตาม priority ไม่ตรงใช้ default rule</td></tr>
-                <tr><td><strong>Action</strong></td><td>forward ไป target group | redirect | fixed-response | authenticate (Cognito/OIDC)</td></tr>
-                <tr><td><strong>Target Group</strong></td><td>กลุ่มปลายทาง + health check ส่งเฉพาะ target ที่ healthy</td></tr>
-              </tbody>
-            </table>
-            <pre><code>{`ผู้ใช้ → ALB (Listener 443) → Rule: /api/*  → Target Group "api"
-                            → Rule: host shop.example.com → Target Group "shop"
-                            → default → Target Group "web"`}</code></pre>
-            <h4>Redirect HTTP → HTTPS</h4>
-            <ul>
-              <li>ไปแก้ที่ <strong>HTTP listener (port 80) ตัวเดิม</strong> ตั้ง action เป็น redirect (301/302) ไป HTTPS:443</li>
-              <li>HTTPS:443 ตั้ง forward ไป target group พร้อม certificate จาก ACM</li>
-              <li>ถ้าเฉพาะ domain ใหม่ ให้เพิ่ม listener rule บน port 80 ที่มี condition เป็น host header</li>
-            </ul>
-            <p className="trap">กับดัก: สร้าง listener ซ้ำบน port เดิมไม่ได้ | ตั้ง redirect บน 443 จับ traffic HTTP ไม่ได้ เพราะ HTTP เข้ามาที่ 80 | redirect จาก 443 ไป 80 ทิศทางกลับด้าน</p>
-            <h4>ฟีเจอร์ที่ออกสอบบ่อย</h4>
-            <ul>
-              <li><strong>HTTPS termination:</strong> ALB ถอดรหัส TLS ด้วย certificate จาก ACM</li>
-              <li><strong>SNI:</strong> listener เดียวใส่ได้หลาย certificate สำหรับหลาย domain</li>
-              <li><strong>Client IP:</strong> server หลังบ้านเห็น IP ของ ALB ต้องอ่านจาก header <code>X-Forwarded-For</code></li>
-              <li><strong>Multi-AZ:</strong> ต้องเลือกอย่างน้อย 2 subnet คนละ AZ</li>
-              <li><strong>Sticky session</strong> ผ่าน cookie | รองรับ WebSocket และ HTTP/2</li>
-              <li><strong>ไม่มี static IP:</strong> ใช้ DNS name ถ้าต้องการ IP คงที่ใช้ NLB หรือ Global Accelerator</li>
-            </ul>
-            <h4>Route 53 vs ALB — ทำงานคนละชั้น</h4>
-            <table>
-              <tbody>
-                <tr><th></th><th>Route 53</th><th>ALB</th></tr>
-                <tr><td>ทำงานตอนไหน</td><td>ก่อนเชื่อมต่อ (DNS: ชื่อ → IP)</td><td>หลังเชื่อมต่อ (request HTTP เข้ามาแล้ว)</td></tr>
-                <tr><td>ตัดสินจาก</td><td>ชื่อ domain + policy + health check</td><td>host, path, header, query</td></tr>
-                <tr><td>เห็น path ไหม</td><td>ไม่เห็น</td><td>เห็น</td></tr>
-              </tbody>
-            </table>
-            <h4>ALB vs NLB</h4>
-            <table>
-              <tbody>
-                <tr><th></th><th>ALB</th><th>NLB</th></tr>
-                <tr><td>Layer</td><td>7 (HTTP/HTTPS)</td><td>4 (TCP/UDP/TLS)</td></tr>
-                <tr><td>Routing</td><td>host/path/header</td><td>port/protocol</td></tr>
-                <tr><td>Static / Elastic IP</td><td>ไม่มี</td><td>มี</td></tr>
-                <tr><td>เหมาะกับ</td><td>เว็บ, microservices, container</td><td>TCP/UDP performance สูง, ต้อง IP คงที่</td></tr>
-              </tbody>
-            </table>
-            <div className="tip">หลักจำ: redirect HTTP→HTTPS ที่ listener 80 | แยกตาม path/domain → ALB | ต้อง IP คงที่หรือ TCP/UDP → NLB | route ตาม URL path ไม่ใช่งาน Route 53</div>
-          </>
-        ),
-      },
     ],
   },
   {
@@ -1805,43 +1805,52 @@ Lambda → deactivate + delete key`}</pre>
     title: "High Performance",
     cards: [
       {
-        title: "Caching — ลดโหลด ลด latency",
+        title: "EC2 Performance: Placement Group และชนิด Instance",
         body: (
           <>
             <table>
               <tbody>
-                <tr><th>บริการ</th><th>แคชอะไร / ใช้เมื่อ</th></tr>
-                <tr><td><strong>CloudFront</strong></td><td>CDN แคชเนื้อหา (static และ dynamic ผ่าน HTTP) ที่ edge location ใกล้ผู้ใช้ทั่วโลก</td></tr>
-                <tr><td><strong>ElastiCache</strong></td><td>In-memory cache หน้า database / เก็บ session — เลือก <strong>Redis</strong> (persistence, replication, Multi-AZ failover, data structure หลากหลาย) หรือ <strong>Memcached</strong> (เรียบง่าย multi-thread ไม่มี persistence)</td></tr>
-                <tr><td><strong>DAX</strong></td><td>แคชเฉพาะ <strong>DynamoDB</strong> — อ่านระดับไมโครวินาที ใช้ API เข้ากันได้กับ DynamoDB แก้โค้ดน้อยมาก</td></tr>
-                <tr><td><strong>API Gateway Cache</strong></td><td>แคชคำตอบของ API ที่ stage ลดการเรียก backend</td></tr>
+                <tr><th>Placement Group</th><th>ลักษณะ</th><th>ใช้เมื่อ</th></tr>
+                <tr><td><strong>Cluster</strong></td><td>รวมใน AZ เดียว ใกล้กันมาก</td><td>HPC / ต้องการ latency ต่ำ throughput สูงระหว่างโหนด (แลกกับความเสี่ยงถ้า AZ/ฮาร์ดแวร์มีปัญหา)</td></tr>
+                <tr><td><strong>Spread</strong></td><td>แยกฮาร์ดแวร์ละ instance</td><td>instance สำคัญไม่กี่ตัวที่ห้ามล้มพร้อมกัน</td></tr>
+                <tr><td><strong>Partition</strong></td><td>แบ่งเป็น partition แยกฮาร์ดแวร์</td><td>ระบบกระจายขนาดใหญ่ เช่น Hadoop, Cassandra, Kafka</td></tr>
               </tbody>
             </table>
-            <div className="tip">หลักจำ: DynamoDB อ่านช้า/ต้องไมโครวินาที → DAX | แคชหน้า RDS/ทั่วไป → ElastiCache | เนื้อหาเว็บผู้ใช้ทั่วโลก → CloudFront</div>
+            <ul>
+              <li>เลือก <strong>instance family</strong> ให้ตรงงาน: Compute optimized (C), Memory optimized (R/X) สำหรับ in-memory DB, Storage optimized (I/D), GPU (P/G) สำหรับ ML</li>
+              <li><strong>Enhanced Networking (ENA)</strong> และ <strong>EFA</strong> (สำหรับ HPC/ML ที่ต้อง inter-node communication ประสิทธิภาพสูง)</li>
+              <li><strong>Graviton</strong> (ARM) ให้ price/performance ดีกว่าในงานจำนวนมาก</li>
+            </ul>
+            <p className="trap">กับดัก: Cluster placement group = เร็วแต่ไม่ทน AZ ล่ม | Spread = ทนฮาร์ดแวร์ล้มแต่ไม่ได้ลด latency</p>
           </>
         ),
       },
       {
-        title: "EBS Provisioned IOPS — อัตราส่วน IOPS ต่อ GiB & Queue Length",
+        title: "ENI vs ENA vs EFA — Network Interface ของ EC2 (HPC ใช้ EFA)",
         body: (
           <>
-            <p>สูตรที่ใช้ตอบโจทย์: <strong>IOPS สูงสุดที่ตั้งได้ = ขนาด volume (GiB) × อัตราส่วนสูงสุดของ type นั้น</strong></p>
+            <p><strong>โจทย์ตัวอย่าง:</strong> HPC + deep learning บน Linux EC2 ต้องการ latency ต่ำและ throughput สูงกว่า TCP ปกติ ช่วยการสื่อสารระหว่าง instance และมี <strong>OS-bypass</strong> ให้คุยกับ network hardware ตรงๆ → ตอบ <strong>Elastic Fabric Adapter (EFA)</strong></p>
             <table>
               <tbody>
-                <tr><th>Volume type</th><th>อัตราส่วนสูงสุด</th><th>หมายเหตุ</th></tr>
-                <tr><td><strong>io1</strong></td><td><strong>50 IOPS ต่อ GiB</strong></td><td>เช่น 10 GiB → สูงสุด <strong>500 IOPS</strong> | 100 GiB → 5,000 IOPS</td></tr>
-                <tr><td>io2</td><td>500 IOPS ต่อ GiB</td><td>ทนทานกว่า (99.999%) และอัตราส่วนสูงกว่า io1 มาก; io2 Block Express สูงกว่านี้อีก</td></tr>
-                <tr><td>gp2</td><td>3 IOPS ต่อ GiB (baseline)</td><td>ผูกกับขนาดโดยตรง ขนาดเล็กได้ IOPS น้อย (มี burst)</td></tr>
-                <tr><td>gp3</td><td>baseline 3,000 IOPS</td><td>ตั้ง IOPS แยกจากขนาดได้ (ภายในเพดานอัตราส่วนของ gp3)</td></tr>
+                <tr><th></th><th>ENI</th><th>ENA</th><th>EFA</th></tr>
+                <tr><td>คืออะไร</td><td>Elastic Network Interface: การ์ดเครือข่ายเสมือนพื้นฐาน (IP, MAC, security group)</td><td>Elastic Network Adapter: enhanced networking bandwidth สูง</td><td>network interface สำหรับ HPC/ML มีความสามารถ OS-bypass</td></tr>
+                <tr><td>ใช้เมื่อ</td><td>ต้องการหลาย IP/SG หรือย้าย IP เพื่อ failover</td><td>ต้องการ bandwidth สูงกว่าปกติ latency ต่ำลง</td><td>งานที่โหนดต้องสื่อสารกันถี่ๆ (MPI, NCCL)</td></tr>
+                <tr><td>OS-bypass</td><td>ไม่มี</td><td>ไม่มี (ยังเป็น TCP ผ่าน OS)</td><td><strong>มี</strong> (Linux)</td></tr>
               </tbody>
             </table>
             <ul>
-              <li>ขนาดเล็กแต่อยากได้ IOPS สูง → ต้องเพิ่มขนาด volume ให้พอกับอัตราส่วน หรือเปลี่ยนไป type ที่อัตราส่วนสูงกว่า (io2)</li>
-              <li><strong>Queue length</strong> = จำนวน I/O request ที่รอรอบอยู่ — คิวยาว = ใช้ IOPS ได้เต็มแต่ <strong>latency เพิ่ม</strong>; คิวสั้น = latency ต่ำ</li>
-              <li>งาน transaction-intensive ที่ต้อง <strong>latency ต่ำ</strong> → ตั้ง IOPS ให้เต็มเพดานของ volume และ <strong>รักษา queue length ให้ต่ำ</strong></li>
+              <li><strong>EFA</strong> ทำงานผ่านไลบรารี เช่น <strong>MPI</strong> (HPC) และ <strong>NCCL</strong> (deep learning) ใช้ได้กับ instance type ที่รองรับเท่านั้น</li>
+              <li>มักใช้คู่กับ <strong>Cluster Placement Group</strong> (วาง instance ใกล้กันใน AZ เดียว) | ข้อมูลให้ใช้ <strong>FSx for Lustre</strong> อ่านจาก S3 | ตัวจัดการ cluster HPC คือ <strong>AWS ParallelCluster</strong></li>
+              <li>รุ่นที่รองรับและตัวเลขความเร็วควรตรวจกับเอกสาร AWS ล่าสุด</li>
             </ul>
-            <div className="tip">ตัวอย่างข้อสอบ: io1 ขนาด 10 GiB ต้องการ IOPS สูงและ latency ต่ำ → ตั้ง <strong>500 IOPS</strong> + <strong>low queue length</strong> (800/600 เกินเพดาน 50:1 ตั้งไม่ได้)</div>
-            <p className="trap">กับดัก: ตัวเลือกที่ IOPS เกิน (ขนาด × อัตราส่วน) ตัดทิ้งก่อนเลย | ตัวเลือก &quot;high queue length&quot; ขัดกับโจทย์ที่ต้องการ latency ต่ำ | ตัวเลือกที่ IOPS ต่ำกว่าเพดานแต่ตั้งได้ ไม่ใช่ &quot;high IOPS&quot; เต็มที่</p>
+            <h4>ทำไมตัวเลือกอื่นในโจทย์ผิด</h4>
+            <ul>
+              <li><strong>ENI:</strong> การ์ดเครือข่ายเสมือนทั่วไป ไม่มี OS-bypass ไม่ได้เร่ง HPC</li>
+              <li><strong>Private VIF:</strong> Virtual Interface ของ <strong>Direct Connect</strong> เชื่อม on-premises เข้า VPC ไม่เกี่ยวกับ EC2 ต่อ EC2</li>
+              <li><strong>ENA:</strong> เร็วแต่ยังเป็น TCP ผ่าน OS ไม่มี OS-bypass</li>
+            </ul>
+            <p className="trap">กับดัก: ENA เร็วก็จริง แต่ไม่ใช่ตัวตอบเมื่อโจทย์พูดถึง OS-bypass | VIF คือคำของ Direct Connect ไม่ใช่การ์ดเครือข่ายของ EC2</p>
+            <div className="tip">หลักจำ: HPC / deep learning / OS-bypass / low-latency inter-instance → EFA | enhanced networking bandwidth สูงทั่วไป → ENA | หลาย IP / ย้าย IP failover → ENI | Direct Connect → VIF</div>
           </>
         ),
       },
@@ -1877,6 +1886,47 @@ Lambda → deactivate + delete key`}</pre>
         ),
       },
       {
+        title: "EBS Provisioned IOPS — อัตราส่วน IOPS ต่อ GiB & Queue Length",
+        body: (
+          <>
+            <p>สูตรที่ใช้ตอบโจทย์: <strong>IOPS สูงสุดที่ตั้งได้ = ขนาด volume (GiB) × อัตราส่วนสูงสุดของ type นั้น</strong></p>
+            <table>
+              <tbody>
+                <tr><th>Volume type</th><th>อัตราส่วนสูงสุด</th><th>หมายเหตุ</th></tr>
+                <tr><td><strong>io1</strong></td><td><strong>50 IOPS ต่อ GiB</strong></td><td>เช่น 10 GiB → สูงสุด <strong>500 IOPS</strong> | 100 GiB → 5,000 IOPS</td></tr>
+                <tr><td>io2</td><td>500 IOPS ต่อ GiB</td><td>ทนทานกว่า (99.999%) และอัตราส่วนสูงกว่า io1 มาก; io2 Block Express สูงกว่านี้อีก</td></tr>
+                <tr><td>gp2</td><td>3 IOPS ต่อ GiB (baseline)</td><td>ผูกกับขนาดโดยตรง ขนาดเล็กได้ IOPS น้อย (มี burst)</td></tr>
+                <tr><td>gp3</td><td>baseline 3,000 IOPS</td><td>ตั้ง IOPS แยกจากขนาดได้ (ภายในเพดานอัตราส่วนของ gp3)</td></tr>
+              </tbody>
+            </table>
+            <ul>
+              <li>ขนาดเล็กแต่อยากได้ IOPS สูง → ต้องเพิ่มขนาด volume ให้พอกับอัตราส่วน หรือเปลี่ยนไป type ที่อัตราส่วนสูงกว่า (io2)</li>
+              <li><strong>Queue length</strong> = จำนวน I/O request ที่รอรอบอยู่ — คิวยาว = ใช้ IOPS ได้เต็มแต่ <strong>latency เพิ่ม</strong>; คิวสั้น = latency ต่ำ</li>
+              <li>งาน transaction-intensive ที่ต้อง <strong>latency ต่ำ</strong> → ตั้ง IOPS ให้เต็มเพดานของ volume และ <strong>รักษา queue length ให้ต่ำ</strong></li>
+            </ul>
+            <div className="tip">ตัวอย่างข้อสอบ: io1 ขนาด 10 GiB ต้องการ IOPS สูงและ latency ต่ำ → ตั้ง <strong>500 IOPS</strong> + <strong>low queue length</strong> (800/600 เกินเพดาน 50:1 ตั้งไม่ได้)</div>
+            <p className="trap">กับดัก: ตัวเลือกที่ IOPS เกิน (ขนาด × อัตราส่วน) ตัดทิ้งก่อนเลย | ตัวเลือก &quot;high queue length&quot; ขัดกับโจทย์ที่ต้องการ latency ต่ำ | ตัวเลือกที่ IOPS ต่ำกว่าเพดานแต่ตั้งได้ ไม่ใช่ &quot;high IOPS&quot; เต็มที่</p>
+          </>
+        ),
+      },
+      {
+        title: "Caching — ลดโหลด ลด latency",
+        body: (
+          <>
+            <table>
+              <tbody>
+                <tr><th>บริการ</th><th>แคชอะไร / ใช้เมื่อ</th></tr>
+                <tr><td><strong>CloudFront</strong></td><td>CDN แคชเนื้อหา (static และ dynamic ผ่าน HTTP) ที่ edge location ใกล้ผู้ใช้ทั่วโลก</td></tr>
+                <tr><td><strong>ElastiCache</strong></td><td>In-memory cache หน้า database / เก็บ session — เลือก <strong>Redis</strong> (persistence, replication, Multi-AZ failover, data structure หลากหลาย) หรือ <strong>Memcached</strong> (เรียบง่าย multi-thread ไม่มี persistence)</td></tr>
+                <tr><td><strong>DAX</strong></td><td>แคชเฉพาะ <strong>DynamoDB</strong> — อ่านระดับไมโครวินาที ใช้ API เข้ากันได้กับ DynamoDB แก้โค้ดน้อยมาก</td></tr>
+                <tr><td><strong>API Gateway Cache</strong></td><td>แคชคำตอบของ API ที่ stage ลดการเรียก backend</td></tr>
+              </tbody>
+            </table>
+            <div className="tip">หลักจำ: DynamoDB อ่านช้า/ต้องไมโครวินาที → DAX | แคชหน้า RDS/ทั่วไป → ElastiCache | เนื้อหาเว็บผู้ใช้ทั่วโลก → CloudFront</div>
+          </>
+        ),
+      },
+      {
         title: "Scale Database ให้เร็ว",
         body: (
           <ul>
@@ -1904,27 +1954,6 @@ Lambda → deactivate + delete key`}</pre>
         ),
       },
       {
-        title: "EC2 Performance: Placement Group และชนิด Instance",
-        body: (
-          <>
-            <table>
-              <tbody>
-                <tr><th>Placement Group</th><th>ลักษณะ</th><th>ใช้เมื่อ</th></tr>
-                <tr><td><strong>Cluster</strong></td><td>รวมใน AZ เดียว ใกล้กันมาก</td><td>HPC / ต้องการ latency ต่ำ throughput สูงระหว่างโหนด (แลกกับความเสี่ยงถ้า AZ/ฮาร์ดแวร์มีปัญหา)</td></tr>
-                <tr><td><strong>Spread</strong></td><td>แยกฮาร์ดแวร์ละ instance</td><td>instance สำคัญไม่กี่ตัวที่ห้ามล้มพร้อมกัน</td></tr>
-                <tr><td><strong>Partition</strong></td><td>แบ่งเป็น partition แยกฮาร์ดแวร์</td><td>ระบบกระจายขนาดใหญ่ เช่น Hadoop, Cassandra, Kafka</td></tr>
-              </tbody>
-            </table>
-            <ul>
-              <li>เลือก <strong>instance family</strong> ให้ตรงงาน: Compute optimized (C), Memory optimized (R/X) สำหรับ in-memory DB, Storage optimized (I/D), GPU (P/G) สำหรับ ML</li>
-              <li><strong>Enhanced Networking (ENA)</strong> และ <strong>EFA</strong> (สำหรับ HPC/ML ที่ต้อง inter-node communication ประสิทธิภาพสูง)</li>
-              <li><strong>Graviton</strong> (ARM) ให้ price/performance ดีกว่าในงานจำนวนมาก</li>
-            </ul>
-            <p className="trap">กับดัก: Cluster placement group = เร็วแต่ไม่ทน AZ ล่ม | Spread = ทนฮาร์ดแวร์ล้มแต่ไม่ได้ลด latency</p>
-          </>
-        ),
-      },
-      {
         title: "Storage, Lambda และ Decoupling เพื่อ Performance",
         body: (
           <ul>
@@ -1936,41 +1965,32 @@ Lambda → deactivate + delete key`}</pre>
           </ul>
         ),
       },
-      {
-        title: "ENI vs ENA vs EFA — Network Interface ของ EC2 (HPC ใช้ EFA)",
-        body: (
-          <>
-            <p><strong>โจทย์ตัวอย่าง:</strong> HPC + deep learning บน Linux EC2 ต้องการ latency ต่ำและ throughput สูงกว่า TCP ปกติ ช่วยการสื่อสารระหว่าง instance และมี <strong>OS-bypass</strong> ให้คุยกับ network hardware ตรงๆ → ตอบ <strong>Elastic Fabric Adapter (EFA)</strong></p>
-            <table>
-              <tbody>
-                <tr><th></th><th>ENI</th><th>ENA</th><th>EFA</th></tr>
-                <tr><td>คืออะไร</td><td>Elastic Network Interface: การ์ดเครือข่ายเสมือนพื้นฐาน (IP, MAC, security group)</td><td>Elastic Network Adapter: enhanced networking bandwidth สูง</td><td>network interface สำหรับ HPC/ML มีความสามารถ OS-bypass</td></tr>
-                <tr><td>ใช้เมื่อ</td><td>ต้องการหลาย IP/SG หรือย้าย IP เพื่อ failover</td><td>ต้องการ bandwidth สูงกว่าปกติ latency ต่ำลง</td><td>งานที่โหนดต้องสื่อสารกันถี่ๆ (MPI, NCCL)</td></tr>
-                <tr><td>OS-bypass</td><td>ไม่มี</td><td>ไม่มี (ยังเป็น TCP ผ่าน OS)</td><td><strong>มี</strong> (Linux)</td></tr>
-              </tbody>
-            </table>
-            <ul>
-              <li><strong>EFA</strong> ทำงานผ่านไลบรารี เช่น <strong>MPI</strong> (HPC) และ <strong>NCCL</strong> (deep learning) ใช้ได้กับ instance type ที่รองรับเท่านั้น</li>
-              <li>มักใช้คู่กับ <strong>Cluster Placement Group</strong> (วาง instance ใกล้กันใน AZ เดียว) | ข้อมูลให้ใช้ <strong>FSx for Lustre</strong> อ่านจาก S3 | ตัวจัดการ cluster HPC คือ <strong>AWS ParallelCluster</strong></li>
-              <li>รุ่นที่รองรับและตัวเลขความเร็วควรตรวจกับเอกสาร AWS ล่าสุด</li>
-            </ul>
-            <h4>ทำไมตัวเลือกอื่นในโจทย์ผิด</h4>
-            <ul>
-              <li><strong>ENI:</strong> การ์ดเครือข่ายเสมือนทั่วไป ไม่มี OS-bypass ไม่ได้เร่ง HPC</li>
-              <li><strong>Private VIF:</strong> Virtual Interface ของ <strong>Direct Connect</strong> เชื่อม on-premises เข้า VPC ไม่เกี่ยวกับ EC2 ต่อ EC2</li>
-              <li><strong>ENA:</strong> เร็วแต่ยังเป็น TCP ผ่าน OS ไม่มี OS-bypass</li>
-            </ul>
-            <p className="trap">กับดัก: ENA เร็วก็จริง แต่ไม่ใช่ตัวตอบเมื่อโจทย์พูดถึง OS-bypass | VIF คือคำของ Direct Connect ไม่ใช่การ์ดเครือข่ายของ EC2</p>
-            <div className="tip">หลักจำ: HPC / deep learning / OS-bypass / low-latency inter-instance → EFA | enhanced networking bandwidth สูงทั่วไป → ENA | หลาย IP / ย้าย IP failover → ENI | Direct Connect → VIF</div>
-          </>
-        ),
-      },
     ],
   },
   {
     id: "billing",
     title: "Billing & Cost Management",
     cards: [
+      {
+        title: "EC2 Pricing Models",
+        body: (
+          <>
+            <table>
+              <tbody>
+                <tr><th>แบบ</th><th>ลักษณะ</th><th>เหมาะกับ</th></tr>
+                <tr><td><strong>On-Demand</strong></td><td>จ่ายตามที่ใช้ ไม่มีข้อผูกมัด แพงสุดต่อหน่วย</td><td>งานชั่วคราว ไม่แน่นอน ทดลอง</td></tr>
+                <tr><td><strong>Reserved Instances</strong></td><td>ผูกมัด 1 หรือ 3 ปี ลดได้มาก (Standard ลดสูงสุด, Convertible เปลี่ยน instance family ได้)</td><td>งานเสถียร ใช้ต่อเนื่อง คาดการณ์ได้</td></tr>
+                <tr><td><strong>Savings Plans</strong></td><td>ผูกมัดการใช้จ่ายเป็น $/ชั่วโมง 1 หรือ 3 ปี — Compute Savings Plans ยืดหยุ่นข้าม instance family/region และครอบคลุม Fargate/Lambda</td><td>ต้องการส่วนลดแบบ RI แต่ยืดหยุ่นกว่า</td></tr>
+                <tr><td><strong>Spot Instances</strong></td><td>ใช้ capacity ว่างของ AWS ลดสูงสุด ~90% แต่ AWS <strong>ดึงคืนได้</strong> (แจ้งก่อน 2 นาที)</td><td>งาน fault-tolerant / stateless / batch / big data ที่หยุดแล้วทำต่อได้</td></tr>
+                <tr><td><strong>Dedicated Hosts</strong></td><td>เช่าเซิร์ฟเวอร์ทั้งเครื่อง เห็น socket/core — ใช้ license แบบ per-socket/per-core (BYOL)</td><td>compliance, license ผูกฮาร์ดแวร์</td></tr>
+                <tr><td><strong>Dedicated Instances</strong></td><td>instance รันบนฮาร์ดแวร์ที่ไม่แชร์กับ account อื่น แต่ไม่ควบคุมการวางบนเครื่องเอง</td><td>ต้องแยกฮาร์ดแวร์แต่ไม่ต้องคุมระดับ host</td></tr>
+                <tr><td><strong>Capacity Reservations</strong></td><td>จอง capacity ใน AZ ที่ต้องการ (ไม่มีส่วนลดในตัวเอง — ต้องคู่กับ RI/Savings Plans)</td><td>ต้องการการันตีว่ามีเครื่องให้ใช้</td></tr>
+              </tbody>
+            </table>
+            <div className="tip">หลักจำ: ใช้ต่อเนื่องคาดการณ์ได้ → RI/Savings Plans | ล่มได้ ถูกที่สุด → Spot | license per-socket/core → Dedicated Host | การันตี capacity → Capacity Reservation</div>
+          </>
+        ),
+      },
       {
         title: "อะไรคิดเงิน อะไรฟรี (กับดักที่ออกสอบบ่อย)",
         body: (
@@ -1992,23 +2012,18 @@ Lambda → deactivate + delete key`}</pre>
         ),
       },
       {
-        title: "EC2 Pricing Models",
+        title: "แนวทางลดค่าใช้จ่าย (Cost Optimization Patterns)",
         body: (
-          <>
-            <table>
-              <tbody>
-                <tr><th>แบบ</th><th>ลักษณะ</th><th>เหมาะกับ</th></tr>
-                <tr><td><strong>On-Demand</strong></td><td>จ่ายตามที่ใช้ ไม่มีข้อผูกมัด แพงสุดต่อหน่วย</td><td>งานชั่วคราว ไม่แน่นอน ทดลอง</td></tr>
-                <tr><td><strong>Reserved Instances</strong></td><td>ผูกมัด 1 หรือ 3 ปี ลดได้มาก (Standard ลดสูงสุด, Convertible เปลี่ยน instance family ได้)</td><td>งานเสถียร ใช้ต่อเนื่อง คาดการณ์ได้</td></tr>
-                <tr><td><strong>Savings Plans</strong></td><td>ผูกมัดการใช้จ่ายเป็น $/ชั่วโมง 1 หรือ 3 ปี — Compute Savings Plans ยืดหยุ่นข้าม instance family/region และครอบคลุม Fargate/Lambda</td><td>ต้องการส่วนลดแบบ RI แต่ยืดหยุ่นกว่า</td></tr>
-                <tr><td><strong>Spot Instances</strong></td><td>ใช้ capacity ว่างของ AWS ลดสูงสุด ~90% แต่ AWS <strong>ดึงคืนได้</strong> (แจ้งก่อน 2 นาที)</td><td>งาน fault-tolerant / stateless / batch / big data ที่หยุดแล้วทำต่อได้</td></tr>
-                <tr><td><strong>Dedicated Hosts</strong></td><td>เช่าเซิร์ฟเวอร์ทั้งเครื่อง เห็น socket/core — ใช้ license แบบ per-socket/per-core (BYOL)</td><td>compliance, license ผูกฮาร์ดแวร์</td></tr>
-                <tr><td><strong>Dedicated Instances</strong></td><td>instance รันบนฮาร์ดแวร์ที่ไม่แชร์กับ account อื่น แต่ไม่ควบคุมการวางบนเครื่องเอง</td><td>ต้องแยกฮาร์ดแวร์แต่ไม่ต้องคุมระดับ host</td></tr>
-                <tr><td><strong>Capacity Reservations</strong></td><td>จอง capacity ใน AZ ที่ต้องการ (ไม่มีส่วนลดในตัวเอง — ต้องคู่กับ RI/Savings Plans)</td><td>ต้องการการันตีว่ามีเครื่องให้ใช้</td></tr>
-              </tbody>
-            </table>
-            <div className="tip">หลักจำ: ใช้ต่อเนื่องคาดการณ์ได้ → RI/Savings Plans | ล่มได้ ถูกที่สุด → Spot | license per-socket/core → Dedicated Host | การันตี capacity → Capacity Reservation</div>
-          </>
+          <ul>
+            <li><strong>Right-sizing</strong> — ลดขนาด instance ที่ใช้ไม่เต็ม (ดูจาก Compute Optimizer / CloudWatch)</li>
+            <li>งาน steady-state → <strong>RI / Savings Plans</strong>; งานล่มได้/batch → <strong>Spot</strong>; งานไม่แน่นอน → On-Demand</li>
+            <li>ปิด/ลบของที่ไม่ใช้: instance ที่ stop นานๆ, <strong>EBS volume ที่ไม่ได้ attach</strong>, snapshot เก่า, Elastic IP ที่ไม่ผูก, load balancer ที่ว่าง</li>
+            <li>ปิด dev/test นอกเวลางานด้วย <strong>Instance Scheduler</strong> หรือ scheduled scaling</li>
+            <li><strong>S3</strong>: ใช้ Lifecycle Policy / Intelligent-Tiering ย้ายข้อมูลไป class ที่ถูกกว่า</li>
+            <li><strong>ลด data transfer</strong>: ใช้ CloudFront แคชใกล้ผู้ใช้, ใช้ <strong>Gateway VPC Endpoint</strong> สำหรับ S3/DynamoDB (ฟรี) แทนการวิ่งผ่าน NAT Gateway ที่คิดเงินตามปริมาณข้อมูล</li>
+            <li>พิจารณา <strong>serverless</strong> (Lambda, Fargate, DynamoDB on-demand) เมื่อโหลดไม่คงที่ — จ่ายตามการใช้จริง</li>
+            <li>ติด <strong>tag</strong> ทุก resource เพื่อรู้ว่าใครใช้เงินเท่าไหร่ และตั้ง <strong>Budgets</strong> แจ้งเตือนล่วงหน้า</li>
+          </ul>
         ),
       },
       {
@@ -2061,21 +2076,6 @@ Lambda → deactivate + delete key`}</pre>
             <p><strong>ข้อมูลเพิ่มเติม:</strong> มีรายงานจากแหล่งบุคคลที่สามว่า AWS กำลังปรับโครงสร้างแผน — Developer และ Business ถูกแทนที่ด้วย <strong>Business Support+</strong> และมีระดับบนสุดชื่อ <strong>Unified Operations</strong> (Enterprise On-Ramp ทยอยเลิก) ข้อมูลนี้ยังไม่ได้ยืนยันกับหน้าทางการของ AWS ควรตรวจอีกครั้งก่อนสอบ แต่โจทย์ SAA-C03 ส่วนใหญ่ยังอ้างอิงชื่อแผนแบบเดิม</p>
             <div className="tip">หลักจำ: ต้อง Trusted Advisor ครบ + 24/7 สำหรับ production → Business | ต้องมี TAM เฉพาะ → Enterprise</div>
           </>
-        ),
-      },
-      {
-        title: "แนวทางลดค่าใช้จ่าย (Cost Optimization Patterns)",
-        body: (
-          <ul>
-            <li><strong>Right-sizing</strong> — ลดขนาด instance ที่ใช้ไม่เต็ม (ดูจาก Compute Optimizer / CloudWatch)</li>
-            <li>งาน steady-state → <strong>RI / Savings Plans</strong>; งานล่มได้/batch → <strong>Spot</strong>; งานไม่แน่นอน → On-Demand</li>
-            <li>ปิด/ลบของที่ไม่ใช้: instance ที่ stop นานๆ, <strong>EBS volume ที่ไม่ได้ attach</strong>, snapshot เก่า, Elastic IP ที่ไม่ผูก, load balancer ที่ว่าง</li>
-            <li>ปิด dev/test นอกเวลางานด้วย <strong>Instance Scheduler</strong> หรือ scheduled scaling</li>
-            <li><strong>S3</strong>: ใช้ Lifecycle Policy / Intelligent-Tiering ย้ายข้อมูลไป class ที่ถูกกว่า</li>
-            <li><strong>ลด data transfer</strong>: ใช้ CloudFront แคชใกล้ผู้ใช้, ใช้ <strong>Gateway VPC Endpoint</strong> สำหรับ S3/DynamoDB (ฟรี) แทนการวิ่งผ่าน NAT Gateway ที่คิดเงินตามปริมาณข้อมูล</li>
-            <li>พิจารณา <strong>serverless</strong> (Lambda, Fargate, DynamoDB on-demand) เมื่อโหลดไม่คงที่ — จ่ายตามการใช้จริง</li>
-            <li>ติด <strong>tag</strong> ทุก resource เพื่อรู้ว่าใครใช้เงินเท่าไหร่ และตั้ง <strong>Budgets</strong> แจ้งเตือนล่วงหน้า</li>
-          </ul>
         ),
       },
     ],
@@ -2140,18 +2140,6 @@ Lambda → deactivate + delete key`}</pre>
     title: "Governance & Org",
     cards: [
       {
-        title: "Service Control Policy (SCP) vs AWS Control Tower",
-        body: (
-          <>
-            <table><tbody>
-          <tr><th>SCP</th><th>AWS Control Tower</th></tr>
-          <tr><td>Policy ที่ใช้ <strong>"จำกัดเพดานสิทธิ์สูงสุด"</strong> ของทุก account ใน AWS Organizations (แม้เป็น root user ก็ทำเกิน SCP ไม่ได้)</td><td>บริการที่ตั้ง <strong>multi-account landing zone</strong> ให้อัตโนมัติ — สร้าง OU, account, guardrail (ซึ่งหลายตัวสร้างจาก SCP ให้) และ account vending</td></tr>
-        </tbody></table>
-        <p className="trap">กับดัก: SCP คือ "เครื่องมือ" กำหนด guardrail ส่วน Control Tower คือ "ระบบจัดการ" ที่ครอบ SCP + อื่นๆไว้อีกชั้น ไม่ใช่สิ่งเดียวกัน</p>
-          </>
-        ),
-      },
-      {
         title: "แยก 3 ตัว: AWS Organizations vs Control Tower vs IAM Identity Center",
         body: (
           <>
@@ -2185,6 +2173,18 @@ Identity Center = คนเข้ามาใช้ผังนั้นยั�
             </table>
             <p className="trap">กับดัก: Control Tower ไม่ได้ให้สิทธิ์คนเข้าใช้งาน แต่ตั้งสภาพแวดล้อม | SCP ไม่ได้ให้สิทธิ์ใครเลย ได้แค่จำกัด | ถ้าโจทย์ถามว่า &quot;ใครเข้าได้ด้วยสิทธิ์อะไร&quot; ให้นึกถึง Identity Center ก่อน</p>
             <div className="tip">หลักจำ: Organizations = ผัง | Control Tower = ตั้งผังให้อัตโนมัติ | Identity Center = คนเข้า</div>
+          </>
+        ),
+      },
+      {
+        title: "Service Control Policy (SCP) vs AWS Control Tower",
+        body: (
+          <>
+            <table><tbody>
+          <tr><th>SCP</th><th>AWS Control Tower</th></tr>
+          <tr><td>Policy ที่ใช้ <strong>"จำกัดเพดานสิทธิ์สูงสุด"</strong> ของทุก account ใน AWS Organizations (แม้เป็น root user ก็ทำเกิน SCP ไม่ได้)</td><td>บริการที่ตั้ง <strong>multi-account landing zone</strong> ให้อัตโนมัติ — สร้าง OU, account, guardrail (ซึ่งหลายตัวสร้างจาก SCP ให้) และ account vending</td></tr>
+        </tbody></table>
+        <p className="trap">กับดัก: SCP คือ "เครื่องมือ" กำหนด guardrail ส่วน Control Tower คือ "ระบบจัดการ" ที่ครอบ SCP + อื่นๆไว้อีกชั้น ไม่ใช่สิ่งเดียวกัน</p>
           </>
         ),
       },

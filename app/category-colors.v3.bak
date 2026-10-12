@@ -1,0 +1,122 @@
+/* Subtle category cue: --cat only on sidebar bar/number, section rule and card edge; everything else uses the theme accent.
+   Per-category colour coding — muted traditional Japanese colours to suit the ninja theme
+   (ai, yamabuki, kurenai, fuji, seiji, shu, gin ...). Each category gets --cat via data-cat on the
+   sidebar button and on the category section (cards and quiz inherit it).
+   Loaded after globals.css / mobile.css / quiz-modal.css. */
+
+[data-cat="networking"] { --cat: #6d93a0; }
+[data-cat="storage"] { --cat: #b8924f; }
+[data-cat="storage-services"] { --cat: #a08a72; }
+[data-cat="database"] { --cat: #7f9a7c; }
+[data-cat="compute-messaging"] { --cat: #8f82a6; }
+[data-cat="iam"] { --cat: #b8666c; }
+[data-cat="management"] { --cat: #76a094; }
+[data-cat="dr"] { --cat: #bfa862; }
+[data-cat="high-availability"] { --cat: #92a874; }
+[data-cat="high-performance"] { --cat: #c0725a; }
+[data-cat="billing"] { --cat: #b08a98; }
+[data-cat="analytics"] { --cat: #7f8dbb; }
+[data-cat="governance"] { --cat: #9a9da3; }
+[data-cat="api"] { --cat: #6aa5b0; }
+[data-cat="resource-recap"] { --cat: #c9bd9f; }
+
+/* Sidebar: coloured bar + number per category */
+.nav-item[data-cat] {
+  border-left: 4px solid var(--cat);
+}
+.nav-item[data-cat] .nav-number {
+  color: var(--cat);
+}
+.nav-item[data-cat]:hover {
+  background: color-mix(in srgb, var(--cat) 10%, transparent);
+}
+.nav-item[data-cat].active {
+  border-color: var(--cat);
+  background: color-mix(in srgb, var(--cat) 18%, #101514);
+  color: #fff;
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--cat) 14%, transparent);
+}
+
+/* Category heading */
+.category[data-cat] .category-number {
+  color: var(--cat);
+  font-weight: 700;
+}
+.category[data-cat] h3 {
+  color: var(--accent);
+}
+.category[data-cat] .category-rule {
+  height: 2px;
+  background: linear-gradient(90deg, var(--cat), transparent);
+  opacity: 0.55;
+}
+.category[data-cat] .category-count {
+  color: color-mix(in srgb, var(--accent) 70%, #fff);
+}
+
+/* Cards */
+.category[data-cat] .card {
+  border-left: 3px solid color-mix(in srgb, var(--cat) 70%, transparent);
+}
+.category[data-cat] .lesson-arrow {
+  color: var(--accent);
+}
+.category[data-cat] .lesson-summary:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.category[data-cat] .lesson-details[open] .lesson-summary {
+  border-bottom-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+.category[data-cat] .card h4 {
+  color: var(--accent);
+}
+.category[data-cat] .card li::marker {
+  color: var(--accent);
+}
+.category[data-cat] .card th {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, #202320);
+}
+.category[data-cat] .tip {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+
+/* Quiz button + pop-up */
+.category[data-cat] .quiz-open-btn {
+  border-left: 4px solid var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  border-left-color: var(--accent);
+}
+.category[data-cat] .quiz-open-btn .quiz-chevron {
+  color: var(--accent);
+}
+.category[data-cat] .quiz-dialog {
+  border-color: color-mix(in srgb, var(--accent) 60%, #000);
+  border-top: 4px solid var(--accent);
+}
+.category[data-cat] .quiz-dialog-title {
+  color: var(--accent);
+}
+.category[data-cat] .quiz-dialog-close {
+  color: var(--accent);
+}
+.category[data-cat] .quiz-hint {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.category[data-cat] .quiz-option:hover {
+  border-color: var(--accent);
+}
+.category[data-cat] .quiz-option input {
+  accent-color: var(--accent);
+}
+.category[data-cat] .quiz-check-btn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #10151a;
+}
+.category[data-cat] .quiz-check-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 80%, #fff);
+}
