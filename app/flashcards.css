@@ -1,0 +1,208 @@
+/* Flashcards — reuses the .quiz-dialog shell; colours come from --cat (category). */
+
+.study-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.study-actions .quiz-open-btn {
+  flex: 1 1 260px;
+  width: auto;
+  margin-top: 0;
+}
+
+.fc-wrap {
+  padding: 0 16px 8px;
+}
+.fc-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.fc-chip {
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 1px solid #4a5252;
+  border-radius: 999px;
+  background: #1c2528;
+  color: #d0d1cc;
+  font-size: 13px;
+}
+.fc-chip[aria-pressed="true"] {
+  border-color: var(--cat, var(--accent));
+  background: color-mix(in srgb, var(--cat, #d6aa75) 20%, #1c2528);
+  color: #fff;
+}
+.fc-progress {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.fc-bar {
+  height: 4px;
+  margin-bottom: 14px;
+  border-radius: 2px;
+  background: #ffffff18;
+  overflow: hidden;
+}
+.fc-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--cat, var(--accent));
+  transition: width 0.25s;
+}
+
+.fc-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: 260px;
+  padding: 22px 20px;
+  border: 1px solid color-mix(in srgb, var(--cat, #d6aa75) 40%, #333);
+  border-left: 4px solid var(--cat, var(--accent));
+  border-radius: 10px;
+  background: #151e22;
+  color: var(--text);
+  text-align: left;
+  font-size: 17px;
+  line-height: 1.75;
+  cursor: pointer;
+}
+.fc-card:hover {
+  border-color: var(--cat, var(--accent));
+}
+.fc-card.is-back {
+  background: color-mix(in srgb, var(--cat, #d6aa75) 10%, #151e22);
+}
+.fc-card > span {
+  display: block;
+}
+.fc-side {
+  margin-bottom: 10px;
+  color: var(--cat, var(--accent));
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.fc-question {
+  font-weight: 500;
+}
+.fc-options {
+  margin: 12px 0 0;
+  padding-left: 22px;
+  font-size: 15px;
+  color: #d0d1cc;
+}
+.fc-options li {
+  margin-bottom: 6px;
+}
+.fc-answer {
+  margin-bottom: 12px;
+  color: #fff;
+  font-weight: 600;
+}
+.fc-answer-line {
+  display: block;
+  margin-bottom: 6px;
+}
+.fc-explain {
+  color: #d1d2cc;
+  font-size: 15px;
+}
+.fc-tap {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.fc-rate,
+.fc-nav {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+.fc-rate .fc-btn,
+.fc-nav .fc-btn {
+  flex: 1;
+}
+.fc-btn {
+  min-height: 48px;
+  padding: 8px 14px;
+  border: 1px solid #5a5240;
+  border-radius: 6px;
+  background: #1c2528;
+  color: #e4c9a4;
+  font-size: 15px;
+}
+.fc-btn:hover:not(:disabled) {
+  border-color: var(--cat, var(--accent));
+}
+.fc-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.fc-btn-known {
+  border-color: var(--good);
+  color: var(--good);
+}
+.fc-btn-review {
+  border-color: #e0a458;
+  color: #e0a458;
+}
+.fc-done {
+  padding: 28px 8px 8px;
+  text-align: center;
+}
+.fc-done-title {
+  margin: 0 0 6px;
+  font-family: var(--display-font);
+  font-size: 20px;
+  color: var(--cat, var(--accent));
+}
+.fc-done .fc-nav {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.fc-foot {
+  margin-top: 14px;
+  text-align: center;
+}
+.fc-link {
+  padding: 8px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .fc-wrap {
+    padding: 0 10px 8px;
+  }
+  .fc-card {
+    min-height: 220px;
+    padding: 18px 14px;
+    font-size: 17px;
+  }
+  .fc-chip {
+    min-height: 42px;
+    font-size: 14px;
+  }
+  .fc-progress {
+    font-size: 14px;
+  }
+  .fc-btn {
+    min-height: 52px;
+    font-size: 16px;
+  }
+  .fc-link {
+    font-size: 13px;
+  }
+}

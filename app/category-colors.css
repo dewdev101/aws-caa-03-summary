@@ -1,0 +1,120 @@
+/* Per-category colour coding. Each category gets --cat via data-cat on the
+   sidebar button and on the category section (cards and quiz inherit it).
+   Loaded after globals.css / mobile.css / quiz-modal.css. */
+
+[data-cat="networking"] { --cat: #5bb8f5; }
+[data-cat="storage"] { --cat: #f5a742; }
+[data-cat="storage-services"] { --cat: #f28b6b; }
+[data-cat="database"] { --cat: #6fcf97; }
+[data-cat="compute-messaging"] { --cat: #b78cf0; }
+[data-cat="iam"] { --cat: #ff6f7d; }
+[data-cat="management"] { --cat: #4fd1c5; }
+[data-cat="dr"] { --cat: #e9d35b; }
+[data-cat="high-availability"] { --cat: #8fd14f; }
+[data-cat="high-performance"] { --cat: #ff9f5a; }
+[data-cat="billing"] { --cat: #d98fd0; }
+[data-cat="analytics"] { --cat: #7f9cf5; }
+[data-cat="governance"] { --cat: #b8bcc8; }
+[data-cat="api"] { --cat: #62d6e8; }
+[data-cat="resource-recap"] { --cat: #ff8fc7; }
+
+/* Sidebar: coloured bar + number per category */
+.nav-item[data-cat] {
+  border-left: 4px solid var(--cat);
+}
+.nav-item[data-cat] .nav-number {
+  color: var(--cat);
+}
+.nav-item[data-cat]:hover {
+  background: color-mix(in srgb, var(--cat) 10%, transparent);
+}
+.nav-item[data-cat].active {
+  border-color: var(--cat);
+  background: color-mix(in srgb, var(--cat) 18%, #101514);
+  color: #fff;
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--cat) 14%, transparent);
+}
+
+/* Category heading */
+.category[data-cat] .category-number {
+  color: var(--cat);
+  font-weight: 700;
+}
+.category[data-cat] h3 {
+  color: var(--cat);
+}
+.category[data-cat] .category-rule {
+  height: 2px;
+  background: linear-gradient(90deg, var(--cat), transparent);
+  opacity: 0.55;
+}
+.category[data-cat] .category-count {
+  color: color-mix(in srgb, var(--cat) 70%, #fff);
+}
+
+/* Cards */
+.category[data-cat] .card {
+  border-left: 4px solid var(--cat);
+}
+.category[data-cat] .lesson-arrow {
+  color: var(--cat);
+}
+.category[data-cat] .lesson-summary:hover {
+  background: color-mix(in srgb, var(--cat) 8%, transparent);
+}
+.category[data-cat] .lesson-details[open] .lesson-summary {
+  border-bottom-color: color-mix(in srgb, var(--cat) 45%, transparent);
+  background: color-mix(in srgb, var(--cat) 9%, transparent);
+}
+.category[data-cat] .card h4 {
+  color: var(--cat);
+}
+.category[data-cat] .card li::marker {
+  color: var(--cat);
+}
+.category[data-cat] .card th {
+  color: var(--cat);
+  background: color-mix(in srgb, var(--cat) 10%, #202320);
+}
+.category[data-cat] .tip {
+  border-left-color: var(--cat);
+  background: color-mix(in srgb, var(--cat) 9%, transparent);
+}
+
+/* Quiz button + pop-up */
+.category[data-cat] .quiz-open-btn {
+  border-left: 4px solid var(--cat);
+  border-color: color-mix(in srgb, var(--cat) 40%, transparent);
+  border-left-color: var(--cat);
+}
+.category[data-cat] .quiz-open-btn .quiz-chevron {
+  color: var(--cat);
+}
+.category[data-cat] .quiz-dialog {
+  border-color: color-mix(in srgb, var(--cat) 60%, #000);
+  border-top: 4px solid var(--cat);
+}
+.category[data-cat] .quiz-dialog-title {
+  color: var(--cat);
+}
+.category[data-cat] .quiz-dialog-close {
+  color: var(--cat);
+}
+.category[data-cat] .quiz-hint {
+  border-color: var(--cat);
+  color: var(--cat);
+}
+.category[data-cat] .quiz-option:hover {
+  border-color: var(--cat);
+}
+.category[data-cat] .quiz-option input {
+  accent-color: var(--cat);
+}
+.category[data-cat] .quiz-check-btn {
+  background: var(--cat);
+  border-color: var(--cat);
+  color: #10151a;
+}
+.category[data-cat] .quiz-check-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--cat) 80%, #fff);
+}

@@ -207,6 +207,42 @@ export const quizzes: Record<string, QuizQuestion[]> = {
       explain:
         "NAT Gateway ต้องอยู่ใน subnet ที่มี route ไป IGW (public subnet) ถึงจะส่งต่อออกอินเทอร์เน็ตได้ Elastic IP อย่างเดียวไม่พอ",
     },
+    {
+      q: "application tier ที่อยู่ใน Auto Scaling group ของ EC2 เป็น resource เดียวที่ต้องเชื่อมต่อฐานข้อมูล (กฎ inbound ปัจจุบันของ DB เปิด MS SQL port 1433 ให้ 0.0.0.0/0) ตามหลัก least privilege ควรแก้อย่างไร?",
+      options: [
+        "เปลี่ยน Source ของกฎ MS SQL เป็น EC2 instance ID ของแต่ละเครื่องใน Auto Scaling group",
+        "เปลี่ยน Source ของกฎ MS SQL เป็น security group ID ที่ผูกกับ application tier",
+        "เปลี่ยน Source ของกฎ MS SQL เป็น Network ACL ID ที่ผูกกับ application tier",
+        "เปลี่ยน Source ของกฎ MS SQL เป็น static AnyCast IP ที่ผูกกับ application tier",
+      ],
+      correct: 1,
+      explain:
+        "Source ของ Security Group รับ CIDR/IP, prefix list หรือ security group ID ไม่รับ instance ID หรือ NACL ID และ SG ID ครอบคลุมเครื่องใหม่ที่ Auto Scaling สร้างให้อัตโนมัติ ส่วน AnyCast IP เป็นเรื่องของ traffic ขาเข้าจากอินเทอร์เน็ต",
+    },
+    {
+      q: "ข้อใดใส่ในช่อง Source ของกฎ inbound ของ Security Group ได้? (เลือก 2 ข้อ)",
+      options: [
+        "CIDR block เช่น 10.0.1.0/24",
+        "Security group ID ของ SG อื่น",
+        "EC2 instance ID",
+        "Network ACL ID",
+      ],
+      correct: [0, 1],
+      explain:
+        "Source รับ CIDR/IP, prefix list และ security group ID เท่านั้น ส่วน instance ID และ NACL ID ใช้ไม่ได้",
+    },
+    {
+      q: "การใช้ security group ID ของ app tier เป็น Source ใน SG ของฐานข้อมูล ดีกว่าการใช้ IP ของแต่ละเครื่องอย่างไร ในสถาปัตยกรรมที่ใช้ Auto Scaling?",
+      options: [
+        "เครื่องใหม่ที่ Auto Scaling สร้างและติด SG เดียวกันจะได้สิทธิ์เชื่อมต่อ DB อัตโนมัติ โดยไม่ต้องแก้กฎ",
+        "ทำให้ DB เข้าถึงได้จากอินเทอร์เน็ตทั้งหมด",
+        "ทำให้ SG กลายเป็น stateless",
+        "ไม่ต้องมี SG ที่ฝั่ง DB อีกต่อไป",
+      ],
+      correct: 0,
+      explain:
+        "SG ID ทำหน้าที่เป็นป้ายชื่อกลุ่ม: ทุก instance ที่ติด SG นั้นผ่านกฎ ไม่ต้องตามแก้ตาม IP ที่เปลี่ยนไป",
+    },
   ],
   storage: [
     {
@@ -239,6 +275,91 @@ export const quizzes: Record<string, QuizQuestion[]> = {
       correct: 1,
       explain:
         "Multi-Attach รองรับเฉพาะ Provisioned IOPS (io1/io2) เท่านั้น — gp3 ไม่รองรับ และ Multi-Attach คือการ attach volume เดียวกันให้หลาย EC2 ใน AZ เดียวกัน ไม่ใช่ multi-AZ",
+    },
+    {
+      q: "บริษัทมี VM (Linux และ Windows) บน data center ต้องการย้ายขึ้น AWS แบบ lift-and-shift โดยแก้แอปให้น้อยที่สุดและมี downtime น้อยที่สุด ควรเลือกอะไร?",
+      options: [
+        "ส่งออก VM ขึ้น S3 แล้วใช้ VM Import/Export",
+        "ใช้ Application Discovery Service ย้ายและ replicate เครื่อง",
+        "ใช้ AWS DataSync ย้ายทั้งเครื่อง",
+        "ติดตั้ง Replication Agent บน VM แล้วใช้ AWS Application Migration Service (MGN) ทดสอบและ cutover",
+      ],
+      correct: 3,
+      explain:
+        "MGN replicate ระดับ block ต่อเนื่อง ทดสอบก่อนได้ และ cutover สั้นมาก ส่วน Discovery Service แค่สำรวจ DataSync ย้ายไฟล์ และ VM Import/Export เป็นการย้ายครั้งเดียวที่ต้องหยุดระบบนาน",
+    },
+    {
+      q: "Application Discovery Service ทำหน้าที่อะไร?",
+      options: [
+        "สำรวจ/เก็บข้อมูล server เพื่อวางแผนย้าย (ไม่ได้ย้ายเครื่องเอง)",
+        "replicate server ไป AWS อัตโนมัติ",
+        "ย้ายฐานข้อมูลโดยเปลี่ยน engine",
+        "ย้ายไฟล์จำนวนมากไป S3",
+      ],
+      correct: 0,
+      explain:
+        "Discovery Service ใช้สำรวจ server และความสัมพันธ์เพื่อวางแผน ส่วนการย้ายเครื่องใช้ MGN ย้าย DB ใช้ DMS และย้ายไฟล์ใช้ DataSync",
+    },
+    {
+      q: "ต้องการย้าย database จาก Oracle ไป Amazon Aurora PostgreSQL ควรใช้อะไร?",
+      options: [
+        "SCT แปลง schema ร่วมกับ DMS ย้ายข้อมูล",
+        "DMS อย่างเดียวโดยไม่ต้องแปลง schema",
+        "AWS Application Migration Service (MGN)",
+        "AWS DataSync",
+      ],
+      correct: 0,
+      explain:
+        "เปลี่ยน engine (heterogeneous) ต้องใช้ SCT แปลง schema/โค้ด แล้วใช้ DMS ย้ายข้อมูล (full load + CDC)",
+    },
+    {
+      q: "ต้องการย้าย database MySQL บนเครื่อง on-premises ไป Amazon RDS for MySQL โดยให้ต้นทางยังใช้งานได้ระหว่างย้ายและ downtime น้อย ควรใช้อะไร?",
+      options: [
+        "AWS DMS (full load + CDC)",
+        "AWS DataSync",
+        "VM Import/Export",
+        "Application Discovery Service",
+      ],
+      correct: 0,
+      explain:
+        "DMS ทำ full load แล้วตามเก็บการเปลี่ยนแปลงด้วย CDC ต้นทางยังใช้งานได้ แล้ว cutover เมื่อข้อมูลตรงกัน (engine เดียวกันมักไม่ต้องใช้ SCT)",
+    },
+    {
+      q: "ข้อมูลหลาย petabyte ต้องย้ายขึ้น AWS แต่ bandwidth ของเครือข่ายไม่พอ ควรพิจารณาอะไร?",
+      options: [
+        "AWS Snow Family",
+        "AWS DataSync ผ่านอินเทอร์เน็ต",
+        "AWS Application Discovery Service",
+        "Amazon CloudFront",
+      ],
+      correct: 0,
+      explain:
+        "Snow Family ขนข้อมูลด้วยอุปกรณ์ทางกายภาพ เหมาะกับข้อมูลมหาศาลหรือเครือข่ายช้า/ไม่มี",
+    },
+    {
+      q: "องค์กรใช้ Microsoft SQL Server และวางแผนย้ายไป Amazon Aurora PostgreSQL โดยแก้โค้ดของแอปให้น้อยที่สุด การกระทำชุดใดบรรลุเป้าหมายนี้?",
+      options: [
+        "ใช้ AWS Glue แปลง SQL query ของแอปให้เข้ากับ Aurora PostgreSQL",
+        "ใช้ AWS SCT แปลง schema และ AWS DMS ย้ายข้อมูล",
+        "ใช้ AWS AppConfig จัดการ configuration ระหว่างย้าย",
+        "เปิด Babelfish บน Aurora PostgreSQL ให้แอปใช้ SQL query เดิมได้",
+        "ใช้ Kinesis Data Streams replicate ข้อมูลไป Aurora PostgreSQL",
+      ],
+      correct: [1, 3],
+      explain:
+        "เปลี่ยน engine ต้องใช้ SCT (แปลง schema) + DMS (ย้ายข้อมูล) และเปิด Babelfish เพื่อให้แอปเดิมใช้ T-SQL ได้โดยแก้โค้ดน้อย ส่วน Glue เป็น ETL, AppConfig จัดการ config ของแอป และ Kinesis เป็น streaming ไม่ใช่เครื่องมือย้าย DB",
+    },
+    {
+      q: "Babelfish for Aurora PostgreSQL ช่วยอะไร?",
+      options: [
+        "ทำให้ Aurora PostgreSQL เข้าใจ T-SQL และ protocol ของ SQL Server ให้แอปเดิมเชื่อมต่อได้",
+        "แปลง schema ของ Oracle ไป PostgreSQL อัตโนมัติ",
+        "ย้ายไฟล์จาก on-premises ไป S3",
+        "สำรองข้อมูล Aurora ข้าม Region",
+      ],
+      correct: 0,
+      explain:
+        "Babelfish ให้ Aurora PostgreSQL รองรับ T-SQL และ TDS ของ SQL Server จึงลดการแก้โค้ดแอป ส่วนการแปลง schema เป็นหน้าที่ของ SCT",
     },
   ],
   "storage-services": [
@@ -449,6 +570,78 @@ export const quizzes: Record<string, QuizQuestion[]> = {
       explain:
         "OAC (แทน OAI แบบเก่า) ทำให้ S3 ยอมรับ request จาก CloudFront เท่านั้น เมื่อใช้ร่วมกับ Signed URL/Cookies ผู้ใช้จะต้องผ่าน CloudFront และยืนยันสิทธิ์ก่อนถึงไฟล์",
     },
+    {
+      q: "บริษัทสื่อระดับโลกต้องแจกวิดีโอฝึกอบรมให้พนักงานผ่าน Amazon CloudFront โดยเนื้อหาเก็บใน S3 แต่ต้องไม่เข้าถึงได้แบบ public จาก S3 โดยตรง ควรใช้วิธีใด?",
+      options: [
+        "สร้าง S3 bucket policy ที่ระบุ CloudFront distribution ID เป็น principal",
+        "สร้าง web ACL ใน AWS WAF เพื่อบล็อกการเข้าถึง S3 แบบ public แล้วผูกกับ distribution",
+        "สร้าง Origin Access Control (OAC) สำหรับ CloudFront และให้สิทธิ์ OAC เข้าถึง object ใน bucket",
+        "สร้าง IAM user สำหรับ CloudFront และให้สิทธิ์เข้าถึง object ใน bucket",
+      ],
+      correct: 2,
+      explain:
+        "OAC ทำให้ S3 รับ request เฉพาะจาก CloudFront ส่วน WAF กรอง HTTP request ไม่ได้ปิด public ของ S3, IAM user ไม่ใช่ตัวตนที่ CloudFront ใช้ และ bucket policy ระบุ distribution ID เป็น principal ตรงๆ ไม่ได้",
+    },
+    {
+      q: "ข้อใดอธิบายความต่างระหว่าง OAC กับ CloudFront Signed Cookies ได้ถูกต้อง?",
+      options: [
+        "OAC จำกัดว่าใครเข้า S3 ได้ (เฉพาะ CloudFront) ส่วน Signed Cookies จำกัดว่าผู้ใช้คนไหนเข้า CloudFront ได้",
+        "OAC จำกัดผู้ใช้ปลายทาง ส่วน Signed Cookies จำกัดการเข้าถึง S3",
+        "ทั้งสองอย่างทำหน้าที่เหมือนกัน เลือกอย่างใดอย่างหนึ่งก็พอ",
+        "ใช้ร่วมกันไม่ได้",
+      ],
+      correct: 0,
+      explain:
+        "OAC ปกป้องฝั่ง CloudFront → S3 ส่วน Signed URL/Cookies ปกป้องฝั่งผู้ใช้ → CloudFront และใช้ร่วมกันได้",
+    },
+    {
+      q: "ต้องการให้เฉพาะพนักงานที่ล็อกอินแล้วดูวิดีโอใน CloudFront ได้ และ S3 ต้องปิด public ด้วย ควรทำอะไรบ้าง? (เลือก 2 ข้อ)",
+      options: [
+        "ตั้ง OAC ให้ CloudFront อ่าน S3 ได้",
+        "ใช้ Signed URL หรือ Signed Cookies ที่ CloudFront",
+        "เปิด S3 bucket เป็น public แล้วซ่อน URL",
+        "ใช้ Security Group ผูกกับ CloudFront",
+      ],
+      correct: [0, 1],
+      explain:
+        "OAC ปิดทางเข้า S3 ตรงๆ ส่วน Signed URL/Cookies จำกัดผู้ดูที่ CloudFront ซึ่ง Security Group ใช้กับ CloudFront ไม่ได้ และการซ่อน URL ไม่ใช่การควบคุมสิทธิ์",
+    },
+    {
+      q: "startup เก็บข้อมูลอสังหาริมทรัพย์ 5 TB ใน S3 bucket ที่ us-east-1 ต้องแชร์ให้ European MSP partner ที่ใช้ S3 เช่นกัน โดยต้องลดค่า data transfer ของ S3 ให้ต่ำที่สุดและปิด anonymous access โซลูชันใดคุ้มค่าที่สุด?",
+      options: [
+        "เปิด Cross-Region Replication (CRR) คัดลอกข้อมูลไป S3 bucket ของ partner ในยุโรป",
+        "เปิด S3 Object Lock แบบ governance mode และตั้ง Legal Hold ทุก object เพื่อลดค่า transfer และปิด anonymous access",
+        "เปิดฟีเจอร์ Requester Pays บน S3 bucket เพื่อลดค่า data transfer และปิด anonymous access",
+        "เปิด cross-account access ของ bucket ให้ partner ดาวน์โหลดและเข้าถึงแบบเฉพาะ AWS account ของ partner",
+      ],
+      correct: 2,
+      explain:
+        "Requester Pays ย้ายค่า request และ data transfer ไปให้ผู้ร้องขอจ่าย และใช้ได้เฉพาะผู้ร้องขอที่ authenticate แล้ว (ไม่รองรับ anonymous) ส่วน CRR เพิ่มค่าใช้จ่าย, Object Lock กันลบ/แก้ทับ ไม่ได้ลดค่า transfer, cross-account access เจ้าของยังจ่ายค่า transfer",
+    },
+    {
+      q: "เมื่อเปิด Requester Pays บน S3 bucket ใครเป็นผู้จ่ายค่า storage และค่า data transfer ของการดาวน์โหลด?",
+      options: [
+        "เจ้าของ bucket จ่ายค่า storage ส่วนผู้ร้องขอจ่ายค่า request และ data transfer ของการดาวน์โหลด",
+        "ผู้ร้องขอจ่ายทั้งหมด รวมค่า storage",
+        "เจ้าของ bucket จ่ายทั้งหมดเหมือนเดิม",
+        "AWS จ่ายให้ฟรี",
+      ],
+      correct: 0,
+      explain:
+        "Requester Pays ไม่ได้ย้ายค่า storage เจ้าของ bucket ยังจ่ายค่าเก็บข้อมูล แต่ค่า request และ data transfer ที่เกิดจากการดาวน์โหลดตกเป็นของผู้ร้องขอ",
+    },
+    {
+      q: "ข้อใดเป็นข้อกำหนดของ S3 Requester Pays? (เลือก 2 ข้อ)",
+      options: [
+        "ผู้ร้องขอต้อง authenticate (ไม่รองรับ anonymous request)",
+        "ผู้ร้องขอต้องระบุว่ายอมจ่าย เช่นส่ง header x-amz-request-payer: requester",
+        "ต้องเปิด Cross-Region Replication ก่อน",
+        "ต้องเปิด S3 Object Lock ก่อน",
+      ],
+      correct: [0, 1],
+      explain:
+        "Requester Pays ต้องการผู้ร้องขอที่ระบุตัวตนได้ และต้องยืนยันว่ายอมจ่ายใน request ส่วน CRR และ Object Lock ไม่เกี่ยวข้อง",
+    },
   ],
   database: [
     {
@@ -569,6 +762,66 @@ export const quizzes: Record<string, QuizQuestion[]> = {
       ],
       correct: 0,
       explain: "ย้ายข้าม engine ต้องแปลง schema/code ด้วย SCT แล้วย้ายข้อมูลด้วย DMS (ถ้า engine เดียวกัน DMS อย่างเดียวก็พอ)",
+    },
+    {
+      q: "เกม AR ใช้ API Gateway และตาราง DynamoDB ที่ตั้ง read/write capacity ไว้ล่วงหน้า ช่วง peak ตารางถูก throttle ทำให้เกมช้า ควรทำอย่างไรเพื่อปรับปรุงประสิทธิภาพ?",
+      options: [
+        "เพิ่มตาราง DynamoDB เข้า Auto Scaling Group",
+        "ต่อ Application Load Balancer เข้ากับตาราง DynamoDB",
+        "สร้าง SQS queue ไว้หน้าตาราง DynamoDB",
+        "ใช้ DynamoDB Auto Scaling",
+      ],
+      correct: 3,
+      explain:
+        "DynamoDB Auto Scaling ปรับ RCU/WCU อัตโนมัติตามโหลด ส่วน Auto Scaling Group และ ALB ใช้กับ EC2 ไม่ใช่ DynamoDB และ SQS แค่หน่วงการเขียน ไม่ได้เพิ่ม capacity",
+    },
+    {
+      q: "workload บน DynamoDB มี traffic คาดเดาไม่ได้และไม่ต้องการตั้ง capacity ล่วงหน้า ควรเลือกโหมดใด?",
+      options: [
+        "On-demand capacity mode",
+        "Provisioned โดยตั้งค่าสูงสุดตลอดเวลา",
+        "Reserved capacity",
+        "เปลี่ยนไปใช้ RDS",
+      ],
+      correct: 0,
+      explain:
+        "On-demand จ่ายตามการใช้งานจริงและรับ traffic ผันผวนโดยไม่ต้องตั้ง capacity ล่วงหน้า",
+    },
+    {
+      q: "Amazon RDS ปรับสิ่งใดได้อัตโนมัติโดยตรงผ่านฟีเจอร์ Auto Scaling?",
+      options: [
+        "ขนาด storage (Storage Auto Scaling)",
+        "ขนาด CPU/RAM ของ instance",
+        "จำนวน write node",
+        "จำนวน Availability Zone",
+      ],
+      correct: 0,
+      explain:
+        "RDS Storage Auto Scaling ขยายพื้นที่เก็บข้อมูลอัตโนมัติเมื่อใกล้เต็ม (ขยายได้อย่างเดียว) ส่วน CPU/RAM ต้องเปลี่ยน instance class เอง",
+    },
+    {
+      q: "ฐานข้อมูล SQL บน Aurora มี workload ผันผวนคาดเดาไม่ได้ ต้องการให้ compute ปรับขึ้นลงอัตโนมัติตามโหลด ควรเลือกอะไร?",
+      options: [
+        "Aurora Serverless v2",
+        "RDS Multi-AZ",
+        "RDS Read Replica เพียงตัวเดียว",
+        "DynamoDB Accelerator (DAX)",
+      ],
+      correct: 0,
+      explain:
+        "Aurora Serverless v2 ปรับ capacity (ACU) อัตโนมัติตามโหลด ส่วน Multi-AZ ช่วย availability และ DAX ใช้กับ DynamoDB เท่านั้น",
+    },
+    {
+      q: "แอปมีการอ่านจาก RDS หนักมากจนกระทบ database หลัก ต้องการลดภาระโดยไม่เปลี่ยนโค้ดมาก ควรเลือกอะไร?",
+      options: [
+        "เพิ่ม Read Replica",
+        "เปิด Multi-AZ เพื่อเพิ่ม performance",
+        "ใช้ Storage Auto Scaling",
+        "สร้าง SQS queue หน้า database",
+      ],
+      correct: 0,
+      explain:
+        "Read Replica กระจายการอ่านออกจาก database หลัก ส่วน Multi-AZ ช่วย availability ไม่ใช่ performance และ Storage Auto Scaling ช่วยเรื่องพื้นที่เก็บข้อมูล",
     },
   ],
   "compute-messaging": [
@@ -703,6 +956,102 @@ export const quizzes: Record<string, QuizQuestion[]> = {
       correct: [0, 1],
       explain:
         "SNS เป็น pub/sub แบบ push: publish ลง topic แล้วส่งต่อทุก subscriber (SQS, Lambda, HTTP/S, Email, SMS, Mobile push, Firehose) ส่วนโมเดล pull ที่เก็บข้อความไว้ให้ดึงคือ SQS ไม่ใช่ SNS",
+    },
+    {
+      q: "บริษัทรัน container application บน Amazon EKS และ workload เปลี่ยนแปลงตลอดทั้งวัน ต้องการให้ infrastructure ข้างล่างขยาย/ลดอัตโนมัติตามความต้องการ โดยมี operational overhead น้อยที่สุด ควรทำอย่างไร?",
+      options: [
+        "ใช้ EC2 Auto Scaling group พร้อม custom scaling policy ดูแลการ scale ของ EKS worker node",
+        "ผสาน API Gateway แบบ edge-optimized กับ EKS เพื่อจัดการและเปิด API ของ container application",
+        "ใช้ Kubernetes Metrics ร่วมกับ Kubernetes Cluster Autoscaler เพื่อจัดการจำนวน node",
+        "ตั้ง CloudWatch alarm สำหรับ CPU utilization หรือ request count เพื่อ monitor metric ของ container application",
+      ],
+      correct: 2,
+      explain:
+        "Cluster Autoscaler เพิ่ม/ลด node อัตโนมัติเมื่อมี pod ค้างหรือ node ว่าง โดยทำงานร่วมกับ Metrics ส่วน ASG + custom policy ต้องดูแลกฎเอง, API Gateway ไม่เกี่ยวกับการ scale, และ CloudWatch alarm แค่เฝ้าดู ไม่ได้ scale",
+    },
+    {
+      q: "บน EKS อะไรเป็นตัวที่เพิ่ม/ลดจำนวน pod ตาม CPU หรือ memory ที่ใช้อยู่?",
+      options: [
+        "Horizontal Pod Autoscaler (HPA)",
+        "Kubernetes Cluster Autoscaler",
+        "AWS Direct Connect",
+        "Amazon Route 53",
+      ],
+      correct: 0,
+      explain:
+        "HPA ปรับจำนวน pod ตาม metric (อ่านจาก Metrics Server) ส่วน Cluster Autoscaler ปรับจำนวน node",
+    },
+    {
+      q: "pod ใหม่ใน EKS cluster ค้างสถานะ Pending เพราะทุก node มี CPU/memory ไม่พอ อะไรจะแก้ปัญหานี้โดยอัตโนมัติ?",
+      options: [
+        "Cluster Autoscaler เพิ่ม node ให้",
+        "HPA เพิ่มจำนวน pod อีก",
+        "Amazon CloudFront",
+        "AWS Config",
+      ],
+      correct: 0,
+      explain:
+        "pod Pending เพราะทรัพยากรของ node ไม่พอ Cluster Autoscaler จะเพิ่ม node เพื่อให้ pod ถูกจัดวางได้ ส่วนการเพิ่ม pod มากขึ้นยิ่งทำให้ค้างเพิ่ม",
+    },
+    {
+      q: "ต้องการรัน pod บน EKS โดยไม่ต้องจัดการ node (EC2) เอง ควรเลือกอะไร?",
+      options: [
+        "EKS on AWS Fargate",
+        "EC2 Auto Scaling group",
+        "EC2 Dedicated Host",
+        "Amazon Lightsail",
+      ],
+      correct: 0,
+      explain:
+        "Fargate ให้ compute แยกต่อ pod โดย AWS จัดการให้ ไม่ต้องดูแล node เอง",
+    },
+    {
+      q: "บริษัทย้าย NoSQL database ไปรันบน EC2 โดย database replicate ข้อมูลหลายชุดเอง และต้องการ high IOPS แบบ sequential read/write ควรเลือกอะไร?",
+      options: [
+        "Storage optimized instance + instance store",
+        "General purpose instance + EBS",
+        "Memory optimized instance + EBS",
+        "Compute optimized instance + instance store",
+      ],
+      correct: 0,
+      explain:
+        "Storage optimized เน้น disk I/O และ instance store ต่อตรงกับ host จึงเร็วกว่า EBS ส่วนข้อมูลมี copy อื่นอยู่แล้วจึงไม่กลัวข้อมูลหาย",
+    },
+    {
+      q: "ตระกูล EC2 ใดเน้น RAM ขนาดใหญ่ เหมาะกับ in-memory database?",
+      options: [
+        "Memory optimized (R, X)",
+        "Compute optimized (C)",
+        "Storage optimized (I, D)",
+        "Accelerated computing (P, G)",
+      ],
+      correct: 0,
+      explain:
+        "Memory optimized เน้น RAM สำหรับ in-memory DB และ cache ส่วน Compute เน้น CPU, Storage เน้น disk, Accelerated เน้น GPU",
+    },
+    {
+      q: "ข้อเสียสำคัญของ instance store คืออะไร?",
+      options: [
+        "ข้อมูลเป็นชั่วคราว หายเมื่อ stop/terminate หรือ hardware เสีย",
+        "ช้ากว่า EBS มาก",
+        "เข้ารหัสไม่ได้",
+        "ใช้ได้เฉพาะ Windows",
+      ],
+      correct: 0,
+      explain:
+        "instance store เป็น ephemeral storage จึงเหมาะกับข้อมูลที่มี copy อื่นหรือสร้างใหม่ได้ เช่น cache, buffer",
+    },
+    {
+      q: "งาน batch processing และ video encoding ที่ใช้ CPU หนัก ควรเลือกตระกูล EC2 ใด?",
+      options: [
+        "Compute optimized (C)",
+        "Memory optimized (R)",
+        "Storage optimized (I)",
+        "General purpose (T)",
+      ],
+      correct: 0,
+      explain:
+        "Compute optimized ให้ CPU ต่อ vCPU สูง เหมาะกับงานที่ใช้ CPU เป็นหลัก",
     },
   ],
   iam: [
@@ -850,6 +1199,42 @@ export const quizzes: Record<string, QuizQuestion[]> = {
       explain:
         "EBS encryption by default เปิดได้ระดับ Region ทำให้ volume ใหม่เข้ารหัสทุกลูก ส่วน SCP/IAM Deny ด้วย ec2:Encrypted ก็ใช้บังคับได้เช่นกัน",
     },
+    {
+      q: "หลายทีม (data science, engineering, compliance) ต้องเข้า Aurora และ EFS ด้วยการยืนยันตัวตนส่วนกลาง ตามหลัก least privilege และภาระดูแลน้อยที่สุด ควรเลือกอะไร?",
+      options: [
+        "IAM Identity Center สร้าง permission set แล้ว assign group ตามบทบาท",
+        "Control Tower + SCP + สร้าง IAM role ในทุก account",
+        "Cognito User Pools + Identity Pools",
+        "แยก AWS account ต่อทีม + cross-account role",
+      ],
+      correct: 0,
+      explain:
+        "Identity Center ให้ SSO ส่วนกลาง และจัดสิทธิ์ผ่าน group + permission set ดูแลง่าย ส่วน SCP ไม่ให้สิทธิ์ Cognito ใช้กับผู้ใช้แอป และแยก account ภาระสูง",
+    },
+    {
+      q: "ข้อใดอธิบาย SCP (Service Control Policy) ได้ถูกต้อง?",
+      options: [
+        "ตั้งเพดานสิทธิ์สูงสุดของ account/OU แต่ไม่ได้ให้สิทธิ์เอง",
+        "ให้สิทธิ์ผู้ใช้เข้าถึงบริการโดยตรง",
+        "ใช้ล็อกอินพนักงานแบบ SSO",
+        "ใช้เข้ารหัสข้อมูลใน S3",
+      ],
+      correct: 0,
+      explain:
+        "SCP เป็น guardrail จำกัดสิทธิ์สูงสุด ต้องมี IAM policy ให้สิทธิ์จริงอีกชั้น",
+    },
+    {
+      q: "ต้องการให้ผู้ใช้แอปมือถือของบริษัทสมัครและล็อกอินด้วย Google/Facebook ควรใช้บริการใด?",
+      options: [
+        "Amazon Cognito",
+        "IAM Identity Center",
+        "AWS Control Tower",
+        "AWS Organizations",
+      ],
+      correct: 0,
+      explain:
+        "Cognito ออกแบบสำหรับผู้ใช้ของแอป (สมัคร/ล็อกอิน/social login) ส่วน Identity Center สำหรับพนักงานที่เข้า AWS",
+    },
   ],
   management: [
     {
@@ -919,6 +1304,231 @@ export const quizzes: Record<string, QuizQuestion[]> = {
       correct: [0, 1],
       explain:
         "CloudFormation คือ Infrastructure as Code: เขียน template (YAML/JSON) แล้ว provision/จัดการ/เก็บเวอร์ชัน infra ได้ ไม่ใช่ที่เก็บโค้ดหรือ object storage (นั่นคือ CodeCommit/S3) และตัว CFN ไม่คิดค่าบริการแต่ resource ที่สร้างขึ้นคิดเงินตามปกติ",
+    },
+    {
+      q: "ต้องการตั้ง CloudWatch alarm เมื่อ memory utilization ของ EC2 สูงเกิน 80% ต้องทำอย่างไร?",
+      options: [
+        "ใช้ metric MemoryUtilization ที่ EC2 ส่งให้ CloudWatch เองโดยค่าเริ่มต้น",
+        "ติดตั้ง CloudWatch agent บน instance เพื่อส่ง memory metric แล้วสร้าง alarm จาก metric นั้น",
+        "เปิด Detailed monitoring ของ EC2",
+        "ใช้ AWS CloudTrail ตรวจจับ",
+      ],
+      correct: 1,
+      explain:
+        "Hypervisor มองไม่เห็น RAM ที่ OS ใช้ จึงไม่มี memory metric เป็นค่าเริ่มต้น ต้องติดตั้ง CloudWatch agent ส่ง custom metric ขึ้นไป Detailed monitoring แค่เพิ่มความถี่ของ metric เดิมเป็น 1 นาที ส่วน CloudTrail บันทึก API call",
+    },
+    {
+      q: "metric ใดของ EC2 ที่ CloudWatch เก็บให้โดยไม่ต้องติดตั้ง agent? (เลือก 2 ข้อ)",
+      options: ["CPUUtilization", "NetworkIn", "Memory utilization", "Disk space used (%)"],
+      correct: [0, 1],
+      explain:
+        "CPU และ Network มองเห็นได้ระดับ hypervisor ส่วน memory และ disk space ใช้ไปกี่ % อยู่ระดับ OS ต้องใช้ CloudWatch agent",
+    },
+    {
+      q: "ต้องการส่ง application log จากไฟล์บน EC2 เข้า CloudWatch Logs ต้องทำอะไร?",
+      options: [
+        "ไม่ต้องทำอะไร EC2 ส่งให้เอง",
+        "ติดตั้ง CloudWatch agent และแนบ IAM role ที่มีสิทธิ์ส่งข้อมูลเข้า CloudWatch",
+        "เปิด VPC Flow Logs",
+        "เปิด S3 server access logging",
+      ],
+      correct: 1,
+      explain:
+        "ไฟล์ log อยู่ในเครื่อง AWS มองไม่เห็น ต้องมี agent อ่านแล้วส่งขึ้น CloudWatch Logs โดยใช้ IAM role ที่แนบกับ instance",
+    },
+    {
+      q: "ต้องการดู metric ระดับ OS ของ RDS (เช่น process และ memory แบบละเอียดถึง 1 วินาที) ควรใช้อะไร?",
+      options: [
+        "RDS Enhanced Monitoring",
+        "RDS Performance Insights เท่านั้น",
+        "AWS Config",
+        "ติดตั้ง CloudWatch agent บนเครื่อง RDS",
+      ],
+      correct: 0,
+      explain:
+        "RDS Enhanced Monitoring ให้ metric ระดับ OS ของ DB instance ส่วนเราเข้าไปติดตั้ง agent บน RDS เองไม่ได้ (managed service) และ Performance Insights เน้นวิเคราะห์ load ของ DB",
+    },
+    {
+      q: "ต้องการให้ CloudWatch metric ของ EC2 (เช่น CPUUtilization) อัปเดตถี่ขึ้นเป็นทุก 1 นาที ต้องทำอย่างไร?",
+      options: [
+        "เปิด Detailed monitoring ของ instance",
+        "ติดตั้ง CloudWatch agent",
+        "เปลี่ยนเป็น instance type ที่ใหญ่ขึ้น",
+        "เปิด AWS Config",
+      ],
+      correct: 0,
+      explain:
+        "Basic monitoring ส่ง metric ทุก 5 นาที (ฟรี) ถ้าเปิด Detailed monitoring จะเป็นทุก 1 นาที (เสียเงินเพิ่ม) การติด agent ใช้เพิ่มชนิดของ metric ไม่ได้เกี่ยวกับความถี่ของ metric ที่มีอยู่แล้ว",
+    },
+    {
+      q: "ต้องการตรวจสอบว่า \"ใครเป็นคนลบ Security Group\" ควรดูที่ใด?",
+      options: ["AWS CloudTrail", "Amazon CloudWatch metrics", "CloudWatch agent", "AWS Trusted Advisor"],
+      correct: 0,
+      explain:
+        "CloudTrail บันทึก API call (ใคร ทำอะไร เมื่อไหร่) ส่วน CloudWatch เก็บ metric/log/alarm ของประสิทธิภาพและแอป",
+    },
+    {
+      q: "ต้องการให้ CloudWatch alarm กู้คืน EC2 อัตโนมัติเมื่อ system status check ล้มเหลว (เช่น hardware ของ host มีปัญหา) ควรตั้ง action ใด?",
+      options: [
+        "EC2 recover action ของ alarm",
+        "ส่ง email ผ่าน SNS อย่างเดียว",
+        "Terminate instance แล้วสร้างใหม่ด้วยมือ",
+        "เปลี่ยน subnet ของ instance",
+      ],
+      correct: 0,
+      explain:
+        "Alarm ของ StatusCheckFailed_System สามารถกำหนด recover action ให้ instance ย้ายไปรันบน hardware ใหม่ โดยคง instance ID และ private IP เดิม",
+    },
+    {
+      q: "ต้องการให้ CloudWatch ส่งแจ้งเตือนเมื่อพบคำว่า \"ERROR\" ใน application log ที่เก็บอยู่ใน CloudWatch Logs ควรทำอย่างไร?",
+      options: [
+        "สร้าง metric filter จาก log group แล้วตั้ง alarm จาก metric นั้น",
+        "เปิด Detailed monitoring",
+        "ใช้ VPC Flow Logs",
+        "ใช้ AWS Config rule",
+      ],
+      correct: 0,
+      explain:
+        "Metric filter แปลงข้อความใน log ให้เป็น metric (เช่น นับจำนวนครั้งที่พบ ERROR) แล้วตั้ง alarm จาก metric นั้นเพื่อส่ง SNS ได้",
+    },
+    {
+      q: "ข้อใดต้องติดตั้ง CloudWatch agent จึงจะเห็นค่าบน EC2? (เลือก 2 ข้อ)",
+      options: [
+        "พื้นที่ disk ที่ใช้ไปในระบบไฟล์ (% used)",
+        "การใช้ memory (RAM)",
+        "CPUUtilization",
+        "StatusCheckFailed",
+      ],
+      correct: [0, 1],
+      explain:
+        "Disk space ที่ใช้ไปและ memory เป็นข้อมูลระดับ OS ที่ hypervisor มองไม่เห็น ส่วน CPUUtilization และ StatusCheckFailed มีให้เองโดยไม่ต้องลง agent",
+    },
+    {
+      q: "บริษัทมี EC2 ชุดหนึ่งใน VPC รันแอป mission-critical เมื่อเร็วๆ นี้ EC2 เครื่องหนึ่งดับกะทันหันจนกระทบความพร้อมใช้งาน ผู้บริหารต้องการได้รับแจ้งเมื่อมี AWS event ที่อาจกระทบ EC2 เหล่านี้ล่วงหน้า ควรทำอย่างไร?",
+      options: [
+        "ตั้ง EventBridge rule ตรวจ status change ของ EC2 แล้วให้ Lambda ส่งแจ้งเตือนและ restart instance",
+        "สร้าง EventBridge rule ตรวจ AWS Health event ที่เกี่ยวกับ EC2 แล้วตั้ง SNS topic เป็น target เพื่อแจ้งเตือน",
+        "ตั้ง EventBridge scheduled rule ทุก 24 ชม. ให้ Lambda ไปเช็ก Health Dashboard แล้วแจ้งเตือน",
+        "เปิด Detailed monitoring ของ EC2 แล้วตั้ง CloudWatch alarm",
+      ],
+      correct: 1,
+      explain:
+        "AWS Health ส่ง event (รวมถึงเหตุการณ์ที่กำหนดไว้ล่วงหน้า) เข้า EventBridge ได้ แล้วส่งต่อ SNS ส่วน status change เป็นเหตุการณ์หลังเกิดแล้ว, การ poll ทุก 24 ชม. ซ้ำซ้อนและอาจพลาด และ Detailed monitoring เพิ่มแค่ความถี่ metric",
+    },
+    {
+      q: "ข้อใดอธิบายความต่างระหว่าง AWS Health event กับ EC2 state-change event ได้ถูกต้อง?",
+      options: [
+        "Health event แจ้งเหตุการณ์ของ AWS ที่กระทบ resource เรา (รวมที่กำหนดไว้ล่วงหน้า) ส่วน state-change event แจ้งหลัง instance เปลี่ยนสถานะไปแล้ว",
+        "ทั้งสองอย่างแจ้งล่วงหน้าเหมือนกัน",
+        "State-change event แจ้งล่วงหน้า ส่วน Health event แจ้งหลังเกิดเหตุ",
+        "Health event ใช้ได้เฉพาะ S3",
+      ],
+      correct: 0,
+      explain:
+        "ใช้ Health event เมื่อต้องการรู้ล่วงหน้าว่า AWS มีเหตุการณ์ที่จะกระทบ resource ของเรา ส่วน state-change event ใช้ตอบสนองหลังสถานะเปลี่ยน",
+    },
+    {
+      q: "บริษัทใช้ฐานข้อมูลระบบลงทะเบียนของมหาวิทยาลัยบน RDS และต้องการ monitor ใน CloudWatch เพื่อให้แน่ใจว่าระบบพร้อมใช้งาน enhanced monitoring metrics ใดที่ CloudWatch เก็บจาก RDS DB instance และให้ข้อมูลแม่นยำกว่า?",
+      options: ["CPU Utilization", "Database Connections", "RDS child processes", "OS processes", "Freeable Memory"],
+      correct: [2, 3],
+      explain:
+        "Enhanced Monitoring เก็บข้อมูลระดับ OS ด้วย agent บน DB instance (ราย process, ถี่ถึง 1 วินาที) ส่วน CPU Utilization, Database Connections และ Freeable Memory เป็น metric ปกติของ CloudWatch ที่มีให้เองอยู่แล้ว",
+    },
+    {
+      q: "ข้อใดถูกต้องเกี่ยวกับการดู memory ใน CloudWatch?",
+      options: [
+        "EC2 ต้องติดตั้ง CloudWatch agent จึงเห็น memory ส่วน RDS เห็น FreeableMemory ได้เลย",
+        "EC2 และ RDS เห็น memory ได้เลยทั้งคู่โดยไม่ต้องตั้งค่า",
+        "ทั้ง EC2 และ RDS ต้องติดตั้ง CloudWatch agent จึงเห็น memory",
+        "ต้องเปิด Detailed monitoring จึงเห็น memory ของ EC2",
+      ],
+      correct: 0,
+      explain:
+        "EC2 เป็น OS ของเรา AWS มองไม่เห็นข้างใน จึงต้องลง agent ส่วน RDS เป็น managed service มี FreeableMemory เป็น metric ปกติ และ Detailed monitoring เพิ่มแค่ความถี่ ไม่ได้เพิ่มชนิด metric",
+    },
+    {
+      q: "ต้องการทราบว่า query ใดทำให้ RDS database ช้า (DB load, top SQL, wait events) ควรใช้อะไร?",
+      options: [
+        "RDS Performance Insights",
+        "RDS Enhanced Monitoring",
+        "CloudWatch agent บน RDS",
+        "AWS CloudTrail",
+      ],
+      correct: 0,
+      explain:
+        "Performance Insights วิเคราะห์ load ของ DB ว่า query/wait ใดเป็นต้นเหตุ ส่วน Enhanced Monitoring ดู metric ระดับ OS/process, ลง agent บน RDS เองไม่ได้, และ CloudTrail บันทึก API call",
+    },
+    {
+      q: "นโยบายบริษัทกำหนดรหัสผ่าน IAM ยาวขั้นต่ำ 12 ตัวอักษร ต้องการตรวจและประเมินอัตโนมัติว่า password policy ของ account ตรงนโยบายหรือไม่ ควรใช้อะไร?",
+      options: [
+        "AWS Config (managed rule iam-password-policy)",
+        "CloudTrail กรอง event ChangePassword",
+        "EventBridge rule + SNS เมื่อมีการเปลี่ยนรหัส",
+        "Scheduled Lambda ที่เขียน script ตรวจเอง",
+      ],
+      correct: 0,
+      explain:
+        "Config ประเมิน compliance ของ configuration กับกฎได้เอง (COMPLIANT/NON_COMPLIANT) ไม่ต้องเขียนโค้ด ส่วน CloudTrail บอกแค่ใครทำอะไร และ EventBridge/SNS แค่แจ้งเตือน",
+    },
+    {
+      q: "ต้องการทราบว่าใครเรียก API ลบ security group เมื่อวานนี้ ควรใช้บริการใด?",
+      options: [
+        "AWS CloudTrail",
+        "AWS Config",
+        "Amazon CloudWatch metrics",
+        "AWS Trusted Advisor",
+      ],
+      correct: 0,
+      explain:
+        "CloudTrail บันทึกว่าใครเรียก API อะไรเมื่อไหร่ (audit) ส่วน Config ดูประวัติ configuration และ compliance",
+    },
+    {
+      q: "ข้อใดเป็นหน้าที่ของ AWS Config?",
+      options: [
+        "ประเมินว่า resource ตั้งค่าตรงตามกฎหรือไม่ และเก็บประวัติ configuration",
+        "แสดง CPU utilization ของ EC2",
+        "บันทึกรายชื่อผู้เรียก API ทั้งหมด",
+        "รับ event แล้วส่งต่อไป target",
+      ],
+      correct: 0,
+      explain:
+        "Config = ตรวจ compliance + ประวัติ configuration ส่วนข้ออื่นคือ CloudWatch, CloudTrail และ EventBridge ตามลำดับ",
+    },
+    {
+      q: "บริษัทซื้อ license Windows Server ไว้ 50 ชุด (ผูกกับจำนวน CPU ของแต่ละเครื่อง) ต้องการไม่ให้ developer launch EC2 ใหม่เมื่อ license หมด และให้แจ้งเตือนเมื่อใช้ครบ ควรทำอย่างไร?",
+      options: [
+        "ใช้ AWS Certificate Manager ตั้ง Enforce certificate limit และ SQS แจ้งเตือน",
+        "ใช้ AWS RAM ติดตามและแจกจ่าย license ให้ EC2 แล้วใช้ SNS แจ้งเตือน",
+        "ตั้งกฎใน AWS License Manager เปิด Enforce license limit และเพิ่ม SNS topic แจ้งเตือน",
+        "อัปโหลด license ไว้ใน Systems Manager Fleet Manager แล้วแจกให้ EC2 ผ่าน IAM role",
+      ],
+      correct: 2,
+      explain:
+        "License Manager ติดตามและบังคับจำนวน license ซอฟต์แวร์ได้ (Enforce license limit บล็อกการ launch) และต่อ SNS แจ้งเตือน ส่วน ACM คือ certificate, RAM คือแชร์ resource และ Fleet Manager คือจัดการ server",
+    },
+    {
+      q: "บริการใดใช้แชร์ resource เช่น subnet หรือ Transit Gateway ข้าม AWS account?",
+      options: [
+        "AWS Resource Access Manager (RAM)",
+        "AWS License Manager",
+        "AWS Certificate Manager",
+        "AWS Systems Manager Fleet Manager",
+      ],
+      correct: 0,
+      explain:
+        "RAM ใช้แชร์ resource ข้าม account ส่วน License Manager คุม license ซอฟต์แวร์ ACM จัดการ certificate และ Fleet Manager จัดการ server",
+    },
+    {
+      q: "ต้องการติดตามจำนวน license SQL Server ที่ใช้งานและแจ้งเตือนเมื่อใกล้ครบ ควรใช้อะไร?",
+      options: [
+        "AWS License Manager",
+        "AWS Config rule อย่างเดียว",
+        "Amazon Inspector",
+        "AWS Trusted Advisor",
+      ],
+      correct: 0,
+      explain:
+        "License Manager ออกแบบมาติดตามและควบคุมการใช้ license ซอฟต์แวร์ (Windows Server, SQL Server, Oracle) และต่อ SNS แจ้งเตือนได้",
     },
   ],
   dr: [
@@ -1101,6 +1711,90 @@ export const quizzes: Record<string, QuizQuestion[]> = {
       explain:
         "ต้องเหลือ ≥ 6 ตัวแม้เสีย AZ ที่มีเครื่องมากที่สุด: (3,3,3) เหลือ 6 ✔, (6,6,0) เหลือ 6 ✔ (แต่ไม่ใช่ best practice เพราะไม่ใช้ AZ ที่สาม) ส่วน (2,2,2) เหลือ 4 ✘ และ (4,3,2) เหลือ 5 ✘ — \"ต้องการ 6\" คือขั้นต่ำ ไม่ใช่ผลรวมสูงสุด",
     },
+    {
+      q: "ALB มี listener HTTP:80 และ HTTPS:443 อยู่แล้ว ต้องการให้ traffic HTTP ของ domain ใหม่ถูก redirect ไป HTTPS อัตโนมัติ ควรทำอย่างไร?",
+      options: [
+        "สร้าง HTTP listener ใหม่บน port 80 แล้วเพิ่ม redirect action ไป 443",
+        "ตั้ง redirect action ที่ listener 443 ไปยัง HTTP 80",
+        "แก้ HTTP listener ตัวเดิมให้ redirect traffic ไป port 443",
+        "สร้าง ALB listener ใหม่บน port 443 แล้วตั้งให้ redirect HTTP ไป HTTPS",
+      ],
+      correct: 2,
+      explain:
+        "HTTP เข้ามาที่ port 80 จึงต้องแก้ listener 80 ตัวเดิมให้เป็น redirect action ไป 443 (listener ซ้ำบน port เดิมสร้างไม่ได้ และ redirect บน 443 จับ traffic HTTP ไม่ได้)",
+    },
+    {
+      q: "ALB ทำงานที่ Layer ใดและแยก traffic ตามอะไรได้?",
+      options: [
+        "Layer 4 ตาม port และ protocol",
+        "Layer 7 ตาม host, path, header ของ HTTP/HTTPS",
+        "Layer 3 ตาม IP address",
+        "Layer 2 ตาม MAC address",
+      ],
+      correct: 1,
+      explain:
+        "ALB ทำงานที่ Layer 7 จึงอ่านเนื้อหา request ได้ ส่วน NLB ทำงานที่ Layer 4",
+    },
+    {
+      q: "ต้องการแยก /api/* กับ /shop/* ไปยัง target group ต่างกัน ภายใน domain เดียวกัน ควรใช้อะไร?",
+      options: [
+        "Route 53 weighted routing",
+        "Route 53 geolocation routing",
+        "ALB listener rule แบบ path-based",
+        "Elastic IP",
+      ],
+      correct: 2,
+      explain:
+        "Route 53 ทำงานระดับ DNS ไม่เห็น path ต้องใช้ ALB path-based rule",
+    },
+    {
+      q: "ต้องการ load balancer ที่มี static/Elastic IP และรองรับ TCP/UDP ประสิทธิภาพสูง ควรเลือกอะไร?",
+      options: [
+        "Network Load Balancer",
+        "Application Load Balancer",
+        "Classic Load Balancer ที่ใช้ HTTP",
+        "Route 53 simple routing",
+      ],
+      correct: 0,
+      explain:
+        "NLB ทำงานที่ Layer 4 รองรับ TCP/UDP และมี static/Elastic IP ส่วน ALB ไม่มี static IP",
+    },
+    {
+      q: "server หลัง ALB ต้องการทราบ IP จริงของผู้ใช้ ควรอ่านจากอะไร?",
+      options: [
+        "Header X-Forwarded-For",
+        "Source IP ของ connection โดยตรง",
+        "Security group ของ ALB",
+        "Route 53 query log",
+      ],
+      correct: 0,
+      explain:
+        "server เห็น source IP เป็นของ ALB จึงต้องอ่าน IP ผู้ใช้จาก header X-Forwarded-For",
+    },
+    {
+      q: "สตาร์ทอัพพัฒนาเกมมัลติเพลเยอร์ที่ใช้ UDP สื่อสารระหว่าง client กับ game server และเก็บข้อมูลผู้ใช้แบบ key-value ต้องกระจาย traffic ไปหลาย server ควรเลือกอะไร?",
+      options: [
+        "Network Load Balancer + Amazon Aurora",
+        "Application Load Balancer + Amazon RDS",
+        "Network Load Balancer + Amazon DynamoDB",
+        "Application Load Balancer + Amazon DynamoDB",
+      ],
+      correct: 2,
+      explain:
+        "UDP ต้องใช้ NLB (Layer 4 รองรับ TCP/UDP/TLS) ส่วน ALB รองรับแค่ HTTP/HTTPS และ key-value store คือ DynamoDB ขณะที่ Aurora/RDS เป็น relational",
+    },
+    {
+      q: "ระบบ IoT ส่งข้อมูลผ่าน UDP ต้องการ load balancer ที่รับ traffic ได้สูงและ latency ต่ำ ควรเลือกอะไรระหว่าง ALB และ NLB?",
+      options: [
+        "NLB เพราะทำงาน Layer 4 และรองรับ UDP",
+        "ALB เพราะรองรับ UDP ที่ Layer 7",
+        "ALB หรือ NLB ก็ได้ ไม่ต่างกัน",
+        "ไม่มี load balancer ใดรองรับ UDP",
+      ],
+      correct: 0,
+      explain:
+        "NLB ทำงานที่ Layer 4 รองรับ TCP/UDP/TLS ส่วน ALB รองรับแค่ HTTP/HTTPS (และ gRPC, WebSocket) ไม่รองรับ UDP",
+    },
   ],
   "high-performance": [
     {
@@ -1214,6 +1908,54 @@ export const quizzes: Record<string, QuizQuestion[]> = {
       correct: 0,
       explain:
         "Provisioned Concurrency อุ่น execution environment ไว้ล่วงหน้าเพื่อลด cold start ส่วน Reserved Concurrency เป็นแค่การจองเพดานการรันพร้อมกัน ไม่ได้อุ่นเครื่อง",
+    },
+    {
+      q: "บริษัทรถยนต์ทำโปรเจกต์รถขับเคลื่อนอัตโนมัติบน AWS ที่ต้องใช้ HPC เก็บและจัดการข้อมูลมหาศาลและรองรับ deep learning EC2 Linux ที่ใช้ต้องมี latency ต่ำและ throughput สูงกว่า TCP ปกติ ช่วยการสื่อสารระหว่าง instance และมี OS-bypass ให้คุยกับ network interface hardware ตรงๆ ควรเลือกอะไร?",
+      options: [
+        "ติดตั้ง Elastic Network Interface (ENI) ให้แต่ละ EC2 instance",
+        "ติดตั้ง Elastic Fabric Adapter (EFA) ให้แต่ละ EC2 instance",
+        "ติดตั้ง Private Virtual Interface (VIF) ให้แต่ละ EC2 instance",
+        "ติดตั้ง Elastic Network Adapter (ENA) ให้แต่ละ EC2 instance",
+      ],
+      correct: 1,
+      explain:
+        "EFA มี OS-bypass สำหรับ HPC/ML (ผ่าน MPI, NCCL) ส่วน ENI เป็นการ์ดเครือข่ายเสมือนทั่วไป, ENA เร็วแต่ยังเป็น TCP ผ่าน OS และ Private VIF เป็นของ Direct Connect",
+    },
+    {
+      q: "Elastic Fabric Adapter (EFA) ต่างจาก Elastic Network Adapter (ENA) อย่างไร?",
+      options: [
+        "EFA มีความสามารถ OS-bypass สำหรับงาน HPC/ML ส่วน ENA ให้ enhanced networking ทั่วไปแต่ยังผ่าน OS",
+        "ENA มี OS-bypass ส่วน EFA ไม่มี",
+        "EFA ใช้เชื่อม on-premises กับ VPC",
+        "ทั้งสองอย่างเหมือนกันทุกประการ",
+      ],
+      correct: 0,
+      explain:
+        "EFA เพิ่มความสามารถ OS-bypass ให้ใช้กับ MPI/NCCL ได้ ส่วน ENA เป็น enhanced networking ที่เร็วแต่ไม่มี OS-bypass การเชื่อม on-premises เป็นเรื่องของ Direct Connect/VPN",
+    },
+    {
+      q: "ต้องการย้าย private IP และ security group จาก EC2 instance ที่ล่มไปยัง instance สำรองเพื่อทำ failover ควรใช้ network interface ชนิดใด?",
+      options: [
+        "ENI (ย้าย ENI พร้อม IP ไปยัง instance สำรอง)",
+        "EFA",
+        "Private VIF",
+        "ไม่มีชนิดใดทำได้",
+      ],
+      correct: 0,
+      explain:
+        "ENI สามารถ attach/detach ย้ายไปยัง instance อื่นพร้อม IP และ security group ได้ จึงใช้ทำ failover IP ส่วน EFA เน้นงาน HPC/ML",
+    },
+    {
+      q: "งานใดเหมาะกับการใช้ EFA? (เลือก 2 ข้อ)",
+      options: [
+        "MPI application ของงาน HPC",
+        "NCCL สำหรับ distributed deep learning training",
+        "เว็บไซต์ธรรมดาที่รับ HTTP request",
+        "เชื่อม on-premises เข้า VPC ผ่าน Direct Connect",
+      ],
+      correct: [0, 1],
+      explain:
+        "EFA ถูกออกแบบสำหรับงานที่โหนดสื่อสารกันถี่ๆ เช่น MPI และ NCCL ส่วนเว็บทั่วไปใช้ ENA/ENI ได้ และ Direct Connect ใช้ VIF",
     },
   ],
   billing: [
@@ -1381,6 +2123,54 @@ export const quizzes: Record<string, QuizQuestion[]> = {
       correct: 1,
       explain:
         "Control Tower คือบริการที่ตั้ง landing zone หลาย account ให้อัตโนมัติ (สร้าง OU, account, guardrail ซึ่งหลายตัวสร้างจาก SCP ให้) ส่วน SCP เป็นแค่เครื่องมือกำหนด guardrail ตัวหนึ่งเท่านั้น",
+    },
+    {
+      q: "ต้องการให้พนักงานล็อกอินครั้งเดียวแล้วเข้าได้หลาย AWS account ตามสิทธิ์ของแต่ละทีม ควรใช้บริการใด?",
+      options: [
+        "IAM Identity Center",
+        "AWS Organizations",
+        "AWS Control Tower",
+        "Amazon Cognito",
+      ],
+      correct: 0,
+      explain:
+        "Identity Center ให้ SSO และจัดสิทธิ์ผ่าน permission set + group ส่วน Organizations จัดผัง account, Control Tower ตั้ง landing zone, Cognito ใช้กับผู้ใช้แอป",
+    },
+    {
+      q: "ต้องการสร้าง AWS account ใหม่ให้ได้มาตรฐานและมี guardrail อัตโนมัติ (Account Factory) ควรใช้บริการใด?",
+      options: [
+        "AWS Control Tower",
+        "IAM Identity Center",
+        "AWS Config อย่างเดียว",
+        "AWS Systems Manager",
+      ],
+      correct: 0,
+      explain:
+        "Control Tower ตั้ง landing zone และ Account Factory สร้าง account ใหม่ตามมาตรฐานพร้อม guardrail",
+    },
+    {
+      q: "ต้องการรวมบิลของหลาย account และจัดกลุ่มเป็น OU ควรใช้บริการใด?",
+      options: [
+        "AWS Organizations",
+        "AWS Control Tower",
+        "IAM Identity Center",
+        "AWS Budgets อย่างเดียว",
+      ],
+      correct: 0,
+      explain:
+        "Organizations ทำ consolidated billing จัดกลุ่ม account เป็น OU และตั้ง SCP ส่วนตัวอื่นวางอยู่บนมันหรือใช้ร่วมกัน",
+    },
+    {
+      q: "ข้อใดเป็นความสัมพันธ์ที่ถูกต้องของ 3 บริการนี้?",
+      options: [
+        "Control Tower ตั้งโครงหลาย account บนฐาน Organizations ส่วน Identity Center จัดการการเข้าใช้ของคน",
+        "Organizations ต้องสร้างบน Control Tower",
+        "Identity Center ใช้แทน Organizations ได้",
+        "Control Tower ให้สิทธิ์ผู้ใช้เข้า account โดยตรงแทน IAM",
+      ],
+      correct: 0,
+      explain:
+        "Organizations คือผัง Control Tower ตั้งผังนั้นให้อัตโนมัติ + guardrail และ Identity Center คือการเข้าใช้ของคน (SSO + สิทธิ์)",
     },
   ],
   "resource-recap": [

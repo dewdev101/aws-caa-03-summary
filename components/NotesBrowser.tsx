@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import type { Card, Category } from "@/content/notes";
 import { quizzes } from "@/content/quiz";
-import Quiz from "@/components/Quiz";
+import QuizModal from "@/components/QuizModal";
+import FlashcardModal from "@/components/FlashcardModal";
 
 type SearchableCategory = Omit<Category, "cards"> & {
   cards: (Card & { searchText: string; preview: string })[];
@@ -140,8 +141,18 @@ export default function NotesBrowser({
     return () => window.removeEventListener("hashchange", syncHash);
   }, [categories]);
 
+  // On phones the menu starts collapsed (a compact bar); it expands as a vertical list.
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 760px)").matches) {
+      setSidebarCollapsed(true);
+    }
+  }, []);
+
   function chooseTopic(id: string) {
     setSelected(id);
+    if (window.matchMedia("(max-width: 760px)").matches) {
+      setSidebarCollapsed(true);
+    }
     window.history.replaceState(
       null,
       "",
@@ -212,6 +223,7 @@ export default function NotesBrowser({
           {categories.map((category, index) => (
             <button
               key={category.id}
+              data-cat={category.id}
               className={`nav-item ${selected === category.id ? "active" : ""}`}
               onClick={() => chooseTopic(category.id)}
               aria-pressed={selected === category.id}
@@ -376,6 +388,7 @@ export default function NotesBrowser({
               <section
                 key={category.id}
                 id={category.id}
+                data-cat={category.id}
                 className={`category ${selected !== "all" ? "category-selected" : ""}`}
                 aria-labelledby={`${category.id}-title`}
               >
@@ -423,18 +436,13 @@ export default function NotesBrowser({
                   );
                 })}
                 {!term && quizzes[category.id]?.length > 0 && (
-                  <details className="quiz-disclosure">
-                    <summary>
-                      ทดสอบวิชานินจา{" "}
-                      <span>
-                        แบบทดสอบท้ายหมวด · {quizzes[category.id].length} ข้อ
-                      </span>
-                      <span className="quiz-chevron" aria-hidden="true">
-                        ＋
-                      </span>
-                    </summary>
-                    <Quiz questions={quizzes[category.id]} />
-                  </details>
+                  <div className="study-actions">
+                    <QuizModal questions={quizzes[category.id]} />
+                    <FlashcardModal
+                      categoryId={category.id}
+                      questions={quizzes[category.id]}
+                    />
+                  </div>
                 )}
               </section>
             ))}

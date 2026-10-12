@@ -1,4 +1,5 @@
 import NotesBrowser from "@/components/NotesBrowser";
+import MobileTables from "@/components/MobileTables";
 import { categories } from "@/content/notes";
 import { nodeToText } from "@/lib/text";
 import { isValidElement, type ReactNode } from "react";
@@ -29,5 +30,10 @@ export default function Home() {
     })),
   }));
 
-  return <NotesBrowser categories={searchable} />;
+  return (
+    <>
+      <NotesBrowser categories={searchable} />
+      <MobileTables />
+    </>
+  );
 }
