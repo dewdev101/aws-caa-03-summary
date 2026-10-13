@@ -206,3 +206,44 @@
     font-size: 13px;
   }
 }
+
+/* flashcards-mobile-patch: on phones put the quiz and flashcard buttons side by side */
+@media (max-width: 760px) {
+  .study-actions {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .study-actions .quiz-open-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+    padding: 10px 12px;
+    position: relative;
+  }
+  .study-actions .quiz-open-title {
+    font-size: 15px;
+    line-height: 1.3;
+  }
+  .study-actions .quiz-open-meta {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  .study-actions .quiz-open-btn .quiz-chevron {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    margin: 0;
+    font-size: 15px;
+  }
+}
+@media (max-width: 359px) {
+  .study-actions {
+    flex-wrap: wrap;
+  }
+  .study-actions .quiz-open-btn {
+    flex: 1 1 100%;
+  }
+}
